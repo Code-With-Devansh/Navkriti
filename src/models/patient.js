@@ -2,13 +2,20 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+const medicine = new mongoose.Schema({
+  name:{type:String},
+  color:{type:String},
+  acceptedtime:{type:String},
+  remarks:{type:String}
+})
+
 const medicalHistorySchema = new mongoose.Schema({
   dept: { type: String, required: true },
   doctor_name: { type: String },
   followup: { type: Date },
   alert_type: { type: String, default: "Low" },
   problem: { type: String },
-  prescription: { type: String }
+  prescription: [medicine]
 });
 
 const patientSchema = new mongoose.Schema(
@@ -35,6 +42,9 @@ const patientSchema = new mongoose.Schema(
       unique: true,
       min: [1000000000, 'Phone number must be 10 digits'],
       max: [9999999999, 'Phone number must be 10 digits'],
+    },
+    address:{
+      type:String
     },
     password: {
       type: String,

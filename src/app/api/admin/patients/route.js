@@ -81,7 +81,7 @@ export async function POST(request) {
     
     await dbConnect();
     
-    const { name, ph_number, sex, age, med_history, password } = await request.json();
+    const { name, ph_number, sex, age, med_history, password, address } = await request.json();
     
     // Validate input
     if (!name || !ph_number || !sex || !age || !password) {
@@ -109,6 +109,7 @@ export async function POST(request) {
       age,
       med_history: med_history || [],
       password,
+      address
     });
     
     // Return patient without password
