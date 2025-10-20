@@ -1,42 +1,91 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins";
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root{
+    --primary-bg-color : white;
+    --secondary-bg-color : rgb(251, 247, 247);
+    --theme-color : rgb(149, 0, 255);
+    --text-color : black;
+    --text-color-special : black;
+    --opposite-text-color : white;
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+header{
+    height: 70px;
+    border-bottom: 2px solid var(--theme-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin-bottom: 70px;
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.logo{
+    font-size: 35px;
+    font-weight: 900;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+nav ul{
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+li{
+    list-style: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+a{
+    color: black;
+    text-decoration: none;
+
+}
+
+input{
+    padding: 10px 20px;
+    border: none;
+    outline: none;
+    width: 100%;
+    margin: 10px;
+    font-size: 15px;
+    display: inline-block;
+}
+
+.btn{
+    border: 2px solid var(--theme-color);
+    padding: 10px 20px;
+    margin: 10px;
+    display: inline-block;
+
+}
+
+.rounded{
+    border-radius: 20px;
+}
+
+
+
+.filled{
+    background: var(--theme-color);
+    color: var(--opposite-text-color);
+}
+
+.form-container{
+    width: 60vw;
+    height: 60vh;
+    margin: auto;
+    background: var(--secondary-bg-color);
+    display: flex;
+}
+
+.image-container{
+    width: 50%;
+    height: 100%;
+    background: var(--theme-color);
 }
