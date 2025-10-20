@@ -2,10 +2,10 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import Link from "next/link";
-const LoginFormHospital = () => {
+const RegisterFormHospital = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
+    name:"",
     email: "",
     password: "",
   });
@@ -34,12 +34,13 @@ const LoginFormHospital = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/admin/auth/login", {
+      const response = await fetch("/api/admin/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+            name: formData.name,
           email: formData.email,
           password: formData.password,
         }),
@@ -57,7 +58,7 @@ const LoginFormHospital = () => {
         // Redirect to dashboard
         router.push("/hospital/dashboard");
       } else {
-        setError(data.error || "Login failed. Please try again.");
+        setError(data.error || "registration failed. Please try again.");
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -72,7 +73,7 @@ const LoginFormHospital = () => {
         <Image src={"/images/doctor-loginpage.png"} fill={true} />
       </div>
       <div className="right">
-        <h2>Hospital Login</h2>
+        <h2>Hospital Register</h2>
         {error && (
           <div
             className="error-message"
@@ -89,6 +90,15 @@ const LoginFormHospital = () => {
           </div>
         )}
         <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter your name"
+            value={formData.name}
+            onChange={handleChange}
+            disabled={loading}
+            required
+          />
           <input
             type="email"
             name="email"
@@ -117,18 +127,12 @@ const LoginFormHospital = () => {
               opacity: loading ? 0.7 : 1
             }}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
-        <p style={{ marginTop: "15px", textAlign: "center" }}>
-          Don't have an account?{" "}
-          <Link href="/hospital/register" onClick={(e)=>{e.preventDefault(); router.push("/hospital/register")}} style={{ color: "#007bff" }}>   
-            Register here
-          </Link>
-        </p>
       </div>
     </div>
   );
 };
 
-export default LoginFormHospital;
+export default RegisterFormHospital;
