@@ -175,8 +175,8 @@ export default function PatientRegister() {
   };
 
   return (
-      <div className="flex-1 p-8">
-        <div className="max-w-5xl mx-auto">
+      <div className="patient-register-wrapper">
+        <div className="patient-register-container">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">Patient Register</h1>
 
           {message.text && (
@@ -200,30 +200,30 @@ export default function PatientRegister() {
           <div className="flex gap-2 mb-6 border-b border-gray-200">
             <button
               onClick={() => setActiveTab('basic')}
-              className={`px-6 py-3 font-medium transition ${
+              className={`px-6 py-3 font-medium transition rounded-t-lg ${
                 activeTab === 'basic'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'tab-button-active'
+                  : 'tab-button-inactive'
               }`}
             >
               Basic Info
             </button>
             <button
               onClick={() => setActiveTab('medical')}
-              className={`px-6 py-3 font-medium transition ${
+              className={`px-6 py-3 font-medium transition rounded-t-lg ${
                 activeTab === 'medical'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'tab-button-active'
+                  : 'tab-button-inactive'
               }`}
             >
               Medical Info
             </button>
             <button
               onClick={() => setActiveTab('medicines')}
-              className={`px-6 py-3 font-medium transition ${
+              className={`px-6 py-3 font-medium transition rounded-t-lg ${
                 activeTab === 'medicines'
-                  ? 'text-blue-600 border-b-2 border-blue-600'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'tab-button-active'
+                  : 'tab-button-inactive'
               }`}
             >
               Medicines
@@ -329,7 +329,7 @@ export default function PatientRegister() {
 
                 <button
                   onClick={() => setActiveTab('medical')}
-                  className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition font-medium"
+                  className="w-full nav-button-primary"
                 >
                   Next: Medical Info →
                 </button>
@@ -419,13 +419,13 @@ export default function PatientRegister() {
                 <div className="flex gap-3">
                   <button
                     onClick={() => setActiveTab('basic')}
-                    className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition font-medium"
+                    className="flex-1 nav-button-secondary"
                   >
                     ← Back
                   </button>
                   <button
                     onClick={() => setActiveTab('medicines')}
-                    className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition font-medium"
+                    className="flex-1 nav-button-primary"
                   >
                     Next: Medicines →
                   </button>
@@ -573,14 +573,14 @@ export default function PatientRegister() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setActiveTab('medical')}
-                  className="flex-1 bg-gray-200 text-gray-800 py-3 rounded-lg hover:bg-gray-300 transition font-medium"
+                  className="flex-1 nav-button-secondary"
                 >
                   ← Back
                 </button>
                 <button
                   onClick={handleSubmit}
                   disabled={loading}
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 nav-button-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? 'Adding Patient...' : 'Add Patient'}
                 </button>
