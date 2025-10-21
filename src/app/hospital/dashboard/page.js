@@ -1,6 +1,7 @@
 "use client";
 import DashBoardCard from "@/components/DashBoardCard";
 import SideBar from "@/components/SideBar";
+<<<<<<< HEAD
 import React, { useEffect, useState } from "react";
 
 const DashBoardHospital = () => {
@@ -25,9 +26,62 @@ const DashBoardHospital = () => {
     };
     fetchTotalPatients();
   }, []);
+=======
+import React, { useEffect, useRef } from "react";
+import Chart from "chart.js/auto";
+
+const DashBoardHospital = () => {
+  const chartRef = useRef(null);
+  const chartInstanceRef = useRef(null);
+
+  useEffect(() => {
+    // Only run on client side
+    if (!chartRef.current) return;
+
+    // Destroy existing chart instance if it exists
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.destroy();
+    }
+
+    const data = {
+      labels: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+      ],
+      datasets: [
+        {
+          label: "Patient Checkups",
+          data: [65, 59, 80, 81, 56, 55, 40],
+          fill: false,
+          borderColor: "#2563eb",
+          tension: 0.1,
+        },
+      ],
+    };
+
+    // Create new chart instance
+    chartInstanceRef.current = new Chart(chartRef.current, {
+      type: "line",
+      data: data,
+    });
+
+    // Cleanup function
+    return () => {
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
+    };
+  }, []);
+
+>>>>>>> 505ede97c1a4b99404a333dda298c76a0fffd863
   return (
     <>
-      <SideBar />
+      <SideBar active="dashboard"/>
       <div className="container">
         <div className="dashboard-container">
           <h2>Dashboard</h2>
@@ -63,7 +117,11 @@ const DashBoardHospital = () => {
         <div className="visual-section">
           <div className="graph-container">
             <h2>Patient Checkups - Weekly Overview</h2>
+<<<<<<< HEAD
             <canvas id="graph"></canvas>
+=======
+            <canvas ref={chartRef}></canvas>
+>>>>>>> 505ede97c1a4b99404a333dda298c76a0fffd863
           </div>
           <div className="recent-notifcation-container">
             <h2>Recent Notifications </h2>
@@ -96,6 +154,7 @@ const DashBoardHospital = () => {
   );
 };
 
+<<<<<<< HEAD
 import Chart from "chart.js/auto";
 import { set } from "mongoose";
 
@@ -135,4 +194,6 @@ import { set } from "mongoose";
   });
 })();
 
+=======
+>>>>>>> 505ede97c1a4b99404a333dda298c76a0fffd863
 export default DashBoardHospital;
