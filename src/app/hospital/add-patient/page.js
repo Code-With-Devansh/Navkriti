@@ -5,7 +5,7 @@ import SideBar from '@/components/SideBar'
 const AddPatient = () => {
   return (
     <>
-    <SideBar active={"add-patient"} />
+    <SideBar active={"add patient"} />
     <CreateAccountForm />
     </>
   )
