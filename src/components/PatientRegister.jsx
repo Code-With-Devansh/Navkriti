@@ -441,7 +441,7 @@ export default function PatientRegister() {
                 <h3 className="text-lg font-semibold text-gray-900">Prescription Details</h3>
                 <button
                   onClick={addMedicine}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition add-medicine-button hover-cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   Add Medicine
@@ -460,7 +460,7 @@ export default function PatientRegister() {
                         onClick={() => removeMedicine(index)}
                         className="text-red-600 hover:text-red-800 transition"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-5 h-5 text-red-800 hover-cursor-pointer" />
                       </button>
                     )}
                   </div>

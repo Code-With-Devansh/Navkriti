@@ -41,11 +41,14 @@ header {
   background: var(--light-bg-color);
   height: 150px;
   margin-bottom: 40px;
+  position: fixed;
+  top: 0;
+  z-index: 1000;
 }
 
 main {
   width: 80%;
-  margin: auto;
+  margin: 200px auto;
 }
 
 .sidebar{
@@ -2216,4 +2219,80 @@ Tailwind utilities used in PatientRegister.jsx
 
 .patient-register-container .right{
   width: 80vw !important;
+}
+
+.add-medicine-button{
+  width: auto !important;
+}
+
+.hover-cursor-pointer:hover {
+  cursor: pointer !important;
+}
+
+
+.appointments-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 30px;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+.complete-appointments-container >div > h3{
+  font-size: 25px;
+}
+
+.appointment-card {
+  width: 400px;
+  background: var(--light-bg-color);
+  margin-top: 20px;
+  padding: 30px 20px;
+  border-radius: 10px;
+}
+
+.appointment-card .introPara{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.appointment-card .introPara h3{
+  font-size: 25px;
+}
+
+.appointment-card .introPara p{
+  font-size: 12px;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.appointment-card .introPara i{
+  font-size: 30px;
+  width: 80px;
+  height: 80px;
+  border: 1px solid var(--font-color-light);
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detailsPara i{
+  color: var(--font-color-light);
+  margin-right: 10px;
+}
+
+.detailsPara div{
+  margin-top: 10px;
+}
+
+.complete-appointments-container{
+  margin: 30px 0px;
+}
+
+.patient-register-wrapper{
+  width: 60vw !important;
+  position: relative !important;
+  left: 50% !important;
+  transform: translateX(-30%) !important;
 }
