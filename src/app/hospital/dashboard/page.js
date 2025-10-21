@@ -1,12 +1,60 @@
 "use client";
 import DashBoardCard from "@/components/DashBoardCard";
 import SideBar from "@/components/SideBar";
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import Chart from "chart.js/auto";
 
 const DashBoardHospital = () => {
+  const chartRef = useRef(null);
+  const chartInstanceRef = useRef(null);
+
+  useEffect(() => {
+    // Only run on client side
+    if (!chartRef.current) return;
+
+    // Destroy existing chart instance if it exists
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.destroy();
+    }
+
+    const data = {
+      labels: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+      ],
+      datasets: [
+        {
+          label: "Patient Checkups",
+          data: [65, 59, 80, 81, 56, 55, 40],
+          fill: false,
+          borderColor: "#2563eb",
+          tension: 0.1,
+        },
+      ],
+    };
+
+    // Create new chart instance
+    chartInstanceRef.current = new Chart(chartRef.current, {
+      type: "line",
+      data: data,
+    });
+
+    // Cleanup function
+    return () => {
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
+    };
+  }, []);
+
   return (
     <>
-      <SideBar />
+      <SideBar active="dashboard"/>
       <div className="container">
         <div className="dashboard-container">
           <h2>Dashboard</h2>
@@ -43,9 +91,7 @@ const DashBoardHospital = () => {
         <div className="visual-section">
           <div className="graph-container">
             <h2>Patient Checkups - Weekly Overview</h2>
-            <canvas
-              id="graph"
-            ></canvas>
+            <canvas ref={chartRef}></canvas>
           </div>
           <div className="recent-notifcation-container">
             <h2>Recent Notifications </h2>
@@ -77,43 +123,5 @@ const DashBoardHospital = () => {
     </>
   );
 };
-
-import Chart from "chart.js/auto";
-
-(async function () {
-  const data = {
-    labels: [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ],
-    datasets: [
-      {
-        label: "My First Dataset",
-        data: [65, 59, 80, 81, 56, 55, 40],
-        fill: false,
-        borderColor: "rgb(75, 192, 192)",
-        tension: 0.1,
-      },
-    ],
-  };
-
-  new Chart(document.getElementById("graph"), {
-    type: "line",
-    data: {
-      labels: data.labels,
-      datasets: [
-        {
-          label: "Patient Checkups",
-          data: data.datasets[0].data,
-        },
-      ],
-    },
-  });
-})();
 
 export default DashBoardHospital;

@@ -81,6 +81,7 @@ const LoginFormPatient = () => {
           fill={true} 
           alt="Patient Login"
           priority
+          objectFit="contain"
         />
       </div>
       <div className="right">
@@ -101,7 +102,7 @@ const LoginFormPatient = () => {
 
         <form onSubmit={handleSubmit}>
           <input
-            type="number"
+            type="text"
             name="ph_number"
             placeholder="Enter your mobile number"
             value={formData.ph_number}
@@ -125,7 +126,8 @@ const LoginFormPatient = () => {
             disabled={loading}
             style={{
               cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.7 : 1
+              opacity: loading ? 0.7 : 1,
+              background : loading ? "#ccc" : "#007bff",
             }}
           >
             {loading ? "Logging in..." : "Login"}

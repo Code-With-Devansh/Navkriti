@@ -69,7 +69,7 @@ const LoginFormHospital = () => {
   return (
     <div className="form-container">
       <div className="left">
-        <Image src={"/images/doctor-loginpage.png"} fill={true} />
+        <Image src={"/images/doctor-loginpage.png"} layout="fill" objectFit="contain" alt="doctor image"/>
       </div>
       <div className="right">
         <h2>Hospital Login</h2>
@@ -114,7 +114,8 @@ const LoginFormHospital = () => {
             disabled={loading}
             style={{
               cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.7 : 1
+              opacity: loading ? 0.7 : 1,
+              background : loading ? "#ccc" : "#007bff",
             }}
           >
             {loading ? "Logging in..." : "Login"}
@@ -123,7 +124,7 @@ const LoginFormHospital = () => {
         <p style={{ marginTop: "15px", textAlign: "center" }}>
           Don't have an account?{" "}
           <Link href="/hospital/register" onClick={(e)=>{e.preventDefault(); router.push("/hospital/register")}} style={{ color: "#007bff" }}>   
-            Register here
+            Register
           </Link>
         </p>
       </div>

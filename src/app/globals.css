@@ -1,5 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
+/* 
+critical points 
+homescreen : 1030px
+login : 820px
+register : 940px
+patint login : 840px
+dashboard : 1200px
+*/
+
 * {
   margin: 0;
   padding: 0;
@@ -40,17 +49,17 @@ main {
 }
 
 .sidebar{
-  width: 350px;
+  width: 325px;
   height: 100%;
   background: var(--light-bg-color);
-  position: absolute;
-  top: 150px;
-  left: 0;
+  position: fixed;
+  top: 0px;
+  left: 0px;
   padding: 20px;
   z-index: 1000;
   display: flex;
   flex-direction: column;
-
+  padding-top: 150px;
 }
 
 .sidebar a i{
@@ -102,10 +111,12 @@ li {
 }
 
 .card {
-  width: 300px;
-  height: 300px;
-  background: white;
+  width: 400px;
+  height: 400px;
+  background: var(--light-bg-color);
   text-align: center;
+  padding: 30px;
+  border-radius: 5px;
   border-bottom: 0.1px solid var(--primary-light-color);
 }
 
@@ -140,11 +151,9 @@ li {
   align-items: center;
   width: 80vw;
   min-height: 60vh;
-  background: var(--font-color-light);
   margin: auto;
 }
 .patient-login .left {
-  background-color: var(--primary-color);
   position: relative;
 }
 
@@ -155,7 +164,6 @@ li {
   padding: 40px;
 }
 .left {
-  background-color: var(--primary-color);
   position: relative;
 }
 .right {
@@ -192,16 +200,16 @@ li {
   border-bottom: 2px solid var(--primary-color);
 }
 
-.right a {
+.right a, .right button {
   width: 100%;
   text-align: center;
   padding: 15px 20px;
-  background-color: var(--primary-color);
   color: white;
   margin: 10px;
   margin-top: 20px;
   border-radius: 5px;
   font-size: 20px;
+  border: none;
 }
 
 .patient-login .right a {
@@ -216,6 +224,7 @@ li {
 .cards-container{
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .visual-section{
@@ -304,4 +313,87 @@ footer {
   padding: 20px;
   width: 100%;
   background: var(--light-bg-color);
+}
+
+.patient-container{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 40px;
+}
+
+.patient-card{
+  width: 300px;
+  background: var(--light-bg-color);
+  padding-top: 20px;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.patient-card > div{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.profile-content{
+  margin-bottom: 30px;
+}
+
+.profile-content > div > h2{
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.patient-card i {
+  font-size: 30px;
+  border: 1px solid black;
+  border-radius: 100%;
+  width: 80px;
+  height: 80px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0px 20px;
+}
+
+.txt-light{
+  color: var(--font-color-light);
+}
+
+.details-content{
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.details-content > div{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%;
+}
+
+.details-content > div > p:last-child{
+  font-weight: 600;
+}
+
+.missed-doses-text{
+  color: var(--primary-light-color);
+  background: var(--secondary-color);
+  padding: 5px 15px;
+  border-radius: 10px;
+}
+
+.view-profile-btn{
+  display: inline-block;
+  margin-top: 30px;
+  padding: 15px 20px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 5px;
+  width: 90%;
+  text-align: center;
 }

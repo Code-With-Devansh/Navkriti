@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 const RegisterFormHospital = () => {
@@ -70,7 +71,7 @@ const RegisterFormHospital = () => {
   return (
     <div className="form-container">
       <div className="left">
-        <Image src={"/images/doctor-loginpage.png"} fill={true} />
+        <Image src={"/images/doctor-loginpage.png"} fill={true} objectFit="contain" alt="Doctor image"/>
       </div>
       <div className="right">
         <h2>Hospital Register</h2>
@@ -124,12 +125,19 @@ const RegisterFormHospital = () => {
             disabled={loading}
             style={{
               cursor: loading ? "not-allowed" : "pointer",
-              opacity: loading ? 0.7 : 1
+              opacity: loading ? 0.7 : 1,
+              background: loading ? "#ccc" : "#007bff"
             }}
           >
             {loading ? "Registering..." : "Register"}
           </button>
         </form>
+        <p style={{ marginTop: "15px", textAlign: "center" }}>
+          Already Registered?{" "}
+          <Link href="/hospital/login" onClick={(e) => { e.preventDefault(); router.push("/hospital/login") }} style={{ color: "#007bff" }}>
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );
