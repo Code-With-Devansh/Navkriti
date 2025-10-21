@@ -42,12 +42,17 @@ const Appointments = () => {
       });
 
       if (nextFollowUp) {
-        const key = nextFollowUp.toISOString().split("T")[0]; // e.g., "2025-10-21"
+        const key = nextFollowUp.toISOString().split("T")[0];
         grouped[key] = [...(grouped[key] || []), patient];
       }
     });
     setAppointmentsByDate(grouped);
   }, [patients]);
+
+  // Sort dates descending (latest first)
+  const sortedDates = Object.keys(appointmentsByDate).sort(
+    (a, b) => new Date(b) - new Date(a)
+  );
 
   return (
     <div>
@@ -61,11 +66,9 @@ const Appointments = () => {
         </div>
 
         <div className="complete-appointments-container">
-          {Object.keys(appointmentsByDate).length === 0 && (
-            <p>No Appointments Scheduled</p>
-          )}
+          {sortedDates.length === 0 && <p>No Appointments Scheduled</p>}
 
-          {Object.keys(appointmentsByDate).map((date) => (
+          {sortedDates.map((date) => (
             <div key={date}>
               <h3>
                 <i className="fa-solid fa-calendar"></i>{" "}

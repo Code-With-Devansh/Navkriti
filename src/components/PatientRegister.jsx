@@ -123,7 +123,7 @@ export default function PatientRegister() {
             problem: formData.problem,
             followup: formData.followup || null,
             alert_type: formData.alert_type,
-            medicines: validMedicines,
+            prescription: validMedicines,
           }),
         });
 
