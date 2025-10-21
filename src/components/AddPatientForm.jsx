@@ -1,7 +1,10 @@
+
+
+
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-
+import PatientRegister from "./PatientRegister";
 const AddPatient = () => {
 
   return (
@@ -16,35 +19,7 @@ const AddPatient = () => {
         />
       </div>
       <div className="right">
-        <h2>Patient Register</h2>
-
-        <form>
-          <input
-            type="text"
-            name="patient_name"
-            placeholder="Enter patient name"
-            required
-          />
-          <input
-            type="text"
-            name="ph_number"
-            placeholder="Enter patient mobile number"
-            required
-          />
-
-          <input
-            type="password"
-            name="password"
-            placeholder="Enter password"
-            required
-          />
-
-          <button
-            type="submit"
-          >
-            Add Patient
-          </button>
-        </form>
+        <PatientRegister/>
 
       </div>
     </div>
