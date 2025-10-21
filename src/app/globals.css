@@ -60,6 +60,7 @@ main {
   display: flex;
   flex-direction: column;
   padding-top: 150px;
+  z-index: 1;
 }
 
 .sidebar a i{
@@ -83,6 +84,10 @@ main {
 .sidebar a.active{
   background-color: var(--primary-color);
   color: var(--light-bg-color);
+}
+
+.logo{
+    z-index: 1000;
 }
 
 .logo div {
@@ -396,4 +401,89 @@ footer {
   border-radius: 5px;
   width: 90%;
   text-align: center;
+}
+
+.introPara{
+  margin-bottom: 30px;
+}
+
+.introPara h2{
+  margin-bottom: 10px;
+  font-size: 30px;
+}
+
+.alert-card{
+  background: var(--light-bg-color);
+  padding: 20px;
+  border-radius: 5px;
+  margin-top: 20px;
+  width: 70vw;
+  padding: 20px;
+}
+
+.alert-card h3{
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.alert-card p{
+  font-size: 13px;
+}
+
+.emergency-card{
+  border: 2px solid var(--secondary-color);
+  background: #fdfbfb;
+}
+
+.doses-missed-card{
+  border: 2px solid var(--light-bg-color);
+  background: var(--light-bg-color);
+}
+
+.alert-card > div{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.alert-card{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.alert-card:last-child{
+  margin-bottom: 40px;
+}
+
+.alert-card button{
+  border: none;
+  outline: none;
+  padding: 15px 20px;
+  font-size: 16px;
+  background: white;
+  border: 2px solid var(--font-color-light);
+  border-radius: 5px;
+}
+
+.fa-circle-info{
+  color: var(--secondary-color);
+  font-size: 30px;
+}
+
+.fa-signal{
+  color: var(--primary-color);
+  font-size: 30px;
+}
+
+.fa-thumbs-up{
+  font-size: 30px;
+  color: var(--primary-color);
+}
+
+.resolved-alert-text{
+  background-color: var(--font-color-light);
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: white;
+
 }
