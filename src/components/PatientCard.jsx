@@ -35,7 +35,7 @@ const PatientCard = (props) => {
         </div>
 
         <Link
-          href="/hospital/patient/devesh-sharma"
+          href={`/hospital/patients/${props.id}`}
           className="view-profile-btn"
         >
           View Profile

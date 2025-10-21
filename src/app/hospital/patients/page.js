@@ -1,29 +1,61 @@
 "use client";
 import SideBar from "@/components/SideBar";
-import React, { use, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./patients.module.css";
 import PatientCard from "@/components/PatientCard";
 
 const Patients = () => {
-  const [patients, Setpatients] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [missedDosesMap, setMissedDosesMap] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
-    //fetch patients from api and set to state
-    const fetchTotalPatients = async () => {
-      try {
-        const response = await fetch("/api/admin/patients", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-        Setpatients(data.data || []);
-      } catch (error) {
-        console.error("Error fetching total patients:", error);
-      }
-    };
-    fetchTotalPatients();
+    fetchPatientsAndMissedDoses();
   }, []);
+
+  const fetchPatientsAndMissedDoses = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("adminToken");
+
+      // Fetch patients
+      const patientsResponse = await fetch("/api/admin/patients", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const patientsData = await patientsResponse.json();
+
+      // Fetch missed doses for all patients
+      const missedDosesResponse = await fetch("/api/admin/patients/missed-doses", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const missedDosesData = await missedDosesResponse.json();
+
+      if (patientsData.success) {
+        setPatients(patientsData.data || []);
+      }
+
+      if (missedDosesData.success) {
+        setMissedDosesMap(missedDosesData.data || {});
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter patients based on search term
+  const filteredPatients = patients.filter(patient =>
+    patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    patient.ph_number.toString().includes(searchTerm)
+  );
 
   return (
     <div>
@@ -43,37 +75,65 @@ const Patients = () => {
                 name="patient_name"
                 id="patient_name"
                 className={styles.searchInput}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
         </div>
 
         <div className="container">
-          <div className="patient-container">
-            {patients.map((patient) => {
-              let follow_up = null;
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "40px" }}>
+              <p>Loading patients...</p>
+            </div>
+          ) : (
+            <div className="patient-container">
+              {filteredPatients.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "40px" }}>
+                  <p>No patients found</p>
+                </div>
+              ) : (
+                filteredPatients.map((patient) => {
+                  let follow_up = null;
 
-              patient.med_history.forEach((e) => {
-                const followupDate = new Date(e.followup);
-                if (followupDate >= new Date()) {
-                  if (follow_up === null || followupDate < follow_up) {
-                    follow_up = followupDate;
-                  }
-                }
-              });
+                  // Find the nearest upcoming follow-up date
+                  patient.med_history.forEach((e) => {
+                    if (e.followup) {
+                      const followupDate = new Date(e.followup);
+                      if (followupDate >= new Date()) {
+                        if (follow_up === null || followupDate < follow_up) {
+                          follow_up = followupDate;
+                        }
+                      }
+                    }
+                  });
 
-              return (
-                <PatientCard
-                  key={patient._id} // always add a key when mapping
-                  name={patient.name}
-                  age={patient.age}
-                  follow_up={patient.med_history.length > 0 ? follow_up:"N/A"}
-                  condition = {patient.med_history.length > 0 ? patient.med_history[patient.med_history.length - 1].problem : "N/A"}
-                  missed_doses = {0}
-                />
-              );
-            })}
-          </div>
+                  // Get missed doses count for this patient
+                  const missedDoses = missedDosesMap[patient._id] || 0;
+
+                  // Get the most recent condition/problem
+                  const condition = patient.med_history.length > 0 
+                    ? patient.med_history[patient.med_history.length - 1].problem 
+                    : "N/A";
+
+                  return (
+                    <PatientCard
+                      key={patient._id}
+                      id={patient._id}
+                      name={patient.name}
+                      age={patient.age}
+                      sex={patient.sex}
+                      phone={patient.ph_number}
+                      follow_up={follow_up ? follow_up.toLocaleDateString() : "N/A"}
+                      condition={condition}
+                      missed_doses={missedDoses}
+                    />
+                  );
+                })
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
