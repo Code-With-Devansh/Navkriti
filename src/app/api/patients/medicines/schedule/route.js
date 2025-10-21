@@ -1,4 +1,4 @@
-/ app/api/patient/medicines/schedule/route.js
+// app/api/patient/medicines/schedule/route.js
 // Get today's medicine schedule
 export async function GET(request) {
   try {
