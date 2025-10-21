@@ -1,9 +1,30 @@
 "use client";
 import DashBoardCard from "@/components/DashBoardCard";
 import SideBar from "@/components/SideBar";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const DashBoardHospital = () => {
+  const [totalPatients, setTotalPatients] = useState(0);
+  useEffect(() => {
+    // Fetch total patients from API
+    const fetchTotalPatients = async () => {
+      try {
+        const response = await fetch("/api/admin/patients", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        console.log(data);
+        setTotalPatients(data.data.length || 0);
+      } catch (error) {
+        console.error("Error fetching total patients:", error);
+      }
+    };
+    fetchTotalPatients();
+  }, []);
   return (
     <>
       <SideBar />
@@ -15,9 +36,8 @@ const DashBoardHospital = () => {
         <div className="cards-container">
           <DashBoardCard
             title="Total Patients"
-            count="238"
+            count={totalPatients}
             iconClass="fa-user"
-            lastPara="+5% from last week"
           />
           <DashBoardCard
             title="Missed Doses"
@@ -43,9 +63,7 @@ const DashBoardHospital = () => {
         <div className="visual-section">
           <div className="graph-container">
             <h2>Patient Checkups - Weekly Overview</h2>
-            <canvas
-              id="graph"
-            ></canvas>
+            <canvas id="graph"></canvas>
           </div>
           <div className="recent-notifcation-container">
             <h2>Recent Notifications </h2>
@@ -79,6 +97,7 @@ const DashBoardHospital = () => {
 };
 
 import Chart from "chart.js/auto";
+import { set } from "mongoose";
 
 (async function () {
   const data = {

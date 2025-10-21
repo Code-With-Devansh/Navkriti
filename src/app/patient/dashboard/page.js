@@ -1,8 +1,8 @@
 import React from 'react'
-
+import MedicineReminder from '@/components/MedicineReminder'
 const DashBoardPatient = () => {
   return (
-    <div>DashBoardPatient</div>
+    <div><MedicineReminder/></div>
   )
 }
 
