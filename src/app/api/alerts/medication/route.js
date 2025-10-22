@@ -10,7 +10,7 @@ function genId() {
 
 export async function POST(req) {
   try {
-    const auth = await checkPermission(request, "view_patients");
+    const auth = await checkPermission(req, "view_patients");
 
     if (auth.error) {
       return NextResponse.json(

@@ -12,7 +12,7 @@ export async function GET(_, { params }) {
 
 export async function PUT(req, { params }) {
   try {
-    const auth = await checkPermission(request, "view_patients");
+    const auth = await checkPermission(req, "view_patients");
 
     if (auth.error) {
       return NextResponse.json(
