@@ -5,7 +5,7 @@ const ResolvedAlertCard = ({className,iconClassName, patient_name, message, time
         <div className={'alert-card ' + className}>
             <div>
                 <div>
-                    <i class={"fa-solid " + iconClassName}></i>
+                    <i className={"fa-solid " + iconClassName}></i>
                 </div>
                 <div>
                     <h3>{patient_name}</h3>
