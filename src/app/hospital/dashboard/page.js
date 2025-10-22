@@ -13,88 +13,111 @@ const DashBoardHospital = () => {
   const chartInstanceRef = useRef(null);
 
   const today = new Date();
-const next7Days = new Date();
-next7Days.setDate(today.getDate() + 7);
+  const next7Days = new Date();
+  next7Days.setDate(today.getDate() + 7);
 
-const { totalPatients, totalMissedDoses, alertType, totalUpcomingCheckups } = useMemo(() => {
-  let totalMissed = 0;
-  let alert = "low";
+  const { totalPatients, totalMissedDoses, alertType, totalUpcomingCheckups } =
+    useMemo(() => {
+      let totalMissed = 0;
+      let alert = "low";
 
-  // Total upcoming checkups in next 7 days
-  let upcomingCheckups = 0;
+      // Total upcoming checkups in next 7 days
+      let upcomingCheckups = 0;
 
-  patients.forEach(p => {
-    // Missed doses calculation
-    const recentIntakes = (p.medicine_intakes || [])
-      .filter(i => i?.scheduled_time)
-      .sort((a, b) => new Date(b.scheduled_time) - new Date(a.scheduled_time))
-      .slice(0, 15);
+      patients.forEach((p) => {
+        // Missed doses calculation
+        const recentIntakes = (p.medicine_intakes || [])
+          .filter((i) => i?.scheduled_time)
+          .sort(
+            (a, b) => new Date(b.scheduled_time) - new Date(a.scheduled_time)
+          )
+          .slice(0, 15);
 
-    let consecutiveMissed = 0;
-    for (const intake of recentIntakes) {
-      if (intake.status === "missed") consecutiveMissed++;
-      else if (intake.status === "taken") break;
+        let consecutiveMissed = 0;
+        for (const intake of recentIntakes) {
+          if (intake.status === "missed") consecutiveMissed++;
+          else if (intake.status === "taken") break;
+        }
+        totalMissed += consecutiveMissed;
+
+        // Alert logic
+        const lastAlert =
+          p.med_history?.[p.med_history.length - 1]?.alert?.toLowerCase() || "";
+        if (
+          (lastAlert === "high" && consecutiveMissed > 2) ||
+          (lastAlert === "med" && consecutiveMissed > 5)
+        )
+          alert = "high";
+        else if (lastAlert === "med" || consecutiveMissed > 0)
+          alert = alert !== "high" ? "med" : alert;
+
+        // Upcoming checkups in next 7 days
+        upcomingCheckups += (p.med_history || []).filter((m) => {
+          const f = new Date(m.followup);
+          return f >= today && f <= next7Days;
+        }).length;
+      });
+
+      return {
+        totalPatients: patients.length,
+        totalMissedDoses: totalMissed,
+        alertType: alert,
+        totalUpcomingCheckups: upcomingCheckups,
+      };
+    }, [patients]);
+  const next7DaysData = useMemo(() => {
+    const counts = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
+    const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const today = new Date();
+    const next7Days = new Date();
+    next7Days.setDate(today.getDate() + 7);
+
+    patients.forEach((p) => {
+      (p.med_history || []).forEach((m) => {
+        if (m.followup) {
+          const followupDate = new Date(m.followup);
+          if (followupDate >= today && followupDate <= next7Days) {
+            const day = dayLabels[followupDate.getDay()];
+            counts[day] += 1;
+          }
+        }
+      });
+    });
+
+    // Return array in Mon–Sun order
+    return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
+      (d) => counts[d]
+    );
+  }, [patients]);
+
+useEffect(() => {
+  if (!chartRef.current) return;
+  if (chartInstanceRef.current) chartInstanceRef.current.destroy();
+
+  chartInstanceRef.current = new Chart(chartRef.current, {
+    type: "line",
+    data: {
+      labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+      datasets: [
+        {
+          label: "Upcoming Checkups",
+          data: next7DaysData,
+          borderColor: "#2563eb",
+          backgroundColor: "rgba(37, 99, 235, 0.2)",
+          tension: 0,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } },
+      scales: { y: { beginAtZero: true, precision: 0 } }
     }
-    totalMissed += consecutiveMissed;
-
-    // Alert logic
-    const lastAlert = p.med_history?.[p.med_history.length - 1]?.alert?.toLowerCase() || "";
-    if ((lastAlert === "high" && consecutiveMissed > 2) || (lastAlert === "med" && consecutiveMissed > 5)) alert = "high";
-    else if (lastAlert === "med" || consecutiveMissed > 0) alert = alert !== "high" ? "med" : alert;
-
-    // Upcoming checkups in next 7 days
-    upcomingCheckups += (p.med_history || []).filter(m => {
-      const f = new Date(m.followup);
-      return f >= today && f <= next7Days;
-    }).length;
   });
 
-  return {
-    totalPatients: patients.length,
-    totalMissedDoses: totalMissed,
-    alertType: alert,
-    totalUpcomingCheckups: upcomingCheckups,
-  };
-}, [patients]);
+  return () => chartInstanceRef.current?.destroy();
+}, [next7DaysData]);
 
-
-  useEffect(() => {
-    if (!chartRef.current) return;
-    if (chartInstanceRef.current) chartInstanceRef.current.destroy();
-
-    chartInstanceRef.current = new Chart(chartRef.current, {
-      type: "line",
-      data: {
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-        datasets: [
-          {
-            label: "Patient Checkups",
-            data: [65, 59, 80, 81, 56, 55, 40],
-            borderColor: "#2563eb",
-            tension: 0.1,
-          },
-        ],
-      },
-    });
-    // Current total patients
-    const currentPatients = patients.length;
-
-    // Calculate how many patients were present last week
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
-    const lastWeekPatients = patients.filter((p) => {
-      const createdAt = new Date(p.createdAt); // replace with your patient date field
-      return createdAt < new Date() && createdAt >= oneWeekAgo;
-    }).length;
-    const patientChangePercentl = lastWeekPatients
-      ? Math.round(
-          ((currentPatients - lastWeekPatients) / lastWeekPatients) * 100
-        )
-      : 0;
-    setPatientChangePercent(patientChangePercentl);
-    return () => chartInstanceRef.current?.destroy();
-  }, []);
   if (loading)
     return (
       <p style={{ textAlign: "center", padding: "40px" }}>
