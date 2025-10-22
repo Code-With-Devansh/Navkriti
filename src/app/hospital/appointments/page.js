@@ -1,62 +1,36 @@
 "use client";
-
-import AppointmentCard from "@/components/AppointmentCard";
 import SideBar from "@/components/SideBar";
-import React, { useEffect, useState } from "react";
+import AppointmentCard from "@/components/AppointmentCard";
+import React, { useMemo } from "react";
+import { usePatients } from "@/store/patientStore";
 
 const Appointments = () => {
-  const [patients, setPatients] = useState([]);
-  const [appointmentsByDate, setAppointmentsByDate] = useState({});
+  const { patients, loading } = usePatients();
 
-  useEffect(() => {
-    const fetchPatients = async () => {
-      try {
-        const token = localStorage.getItem("adminToken");
-        const response = await fetch("/api/admin/patients", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-        setPatients(data.data || []);
-      } catch (error) {
-        console.error("Error fetching patients:", error);
-      }
-    };
-    fetchPatients();
-  }, []);
-
-  useEffect(() => {
+  const appointmentsByDate = useMemo(() => {
     const grouped = {};
-    patients.forEach((patient) => {
-      let nextFollowUp = null;
-
-      patient.med_history.forEach((record) => {
-        const followupDate = new Date(record.followup);
-        if (followupDate >= new Date()) {
-          if (!nextFollowUp || followupDate < nextFollowUp) {
-            nextFollowUp = followupDate;
-          }
-        }
-      });
+    patients.forEach(p => {
+      const nextFollowUp = p.med_history
+        .map(m => new Date(m.followup))
+        .filter(d => d >= new Date())
+        .sort((a, b) => a - b)[0];
 
       if (nextFollowUp) {
         const key = nextFollowUp.toISOString().split("T")[0];
-        grouped[key] = [...(grouped[key] || []), patient];
+        grouped[key] = [...(grouped[key] || []), p];
       }
     });
-    setAppointmentsByDate(grouped);
+    return grouped;
   }, [patients]);
 
-  // Sort dates descending (latest first)
-  const sortedDates = Object.keys(appointmentsByDate).sort(
-    (a, b) => new Date(b) - new Date(a)
-  );
+  const sortedDates = Object.keys(appointmentsByDate).sort((a, b) => new Date(b) - new Date(a));
+
+  if (loading) return <p style={{ textAlign: "center", padding: "40px" }}>Loading appointments...</p>;
 
   return (
     <div>
       <SideBar active="appointments" />
+
       <div className="container">
         <div className="introPara">
           <h2>Appointments</h2>
@@ -66,10 +40,12 @@ const Appointments = () => {
         </div>
 
         <div className="complete-appointments-container">
-          {sortedDates.length === 0 && <p>No Appointments Scheduled</p>}
+          {sortedDates.length === 0 && (
+            <p style={{ textAlign: "center", padding: "40px" }}>No Appointments Scheduled</p>
+          )}
 
-          {sortedDates.map((date) => (
-            <div key={date}>
+          {sortedDates.map(date => (
+            <div key={date} className="appointments-date-section">
               <h3>
                 <i className="fa-solid fa-calendar"></i>{" "}
                 {new Date(date).toLocaleDateString("en-US", {
@@ -80,8 +56,8 @@ const Appointments = () => {
               </h3>
 
               <div className="appointments-container">
-                {appointmentsByDate[date].map((patient) => (
-                  <AppointmentCard key={patient._id} patient={patient} />
+                {appointmentsByDate[date].map(p => (
+                  <AppointmentCard key={p._id} patient={p} />
                 ))}
               </div>
             </div>
