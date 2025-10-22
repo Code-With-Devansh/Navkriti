@@ -1,4 +1,4 @@
-import { dbConnect } from "@/lib/dbConnect";
+import dbConnect from '@/lib/mongoose';
 import Alert from "@/models/alert";
 import { NextResponse } from "next/server";
 

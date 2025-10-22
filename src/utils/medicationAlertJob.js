@@ -1,4 +1,4 @@
-import { dbConnect } from "@/lib/dbConnect";
+import dbConnect from '@/lib/mongoose';
 import Patient from "@/models/patient";
 import Alert from "@/models/alert";
 import { v4 as uuidv4 } from "uuid";

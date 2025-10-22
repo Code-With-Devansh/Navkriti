@@ -1,4 +1,6 @@
 // models/Alert.js
+import mongoose from "mongoose"; 
+
 const alertSchema = new mongoose.Schema({
   // Alert Identification
   alert_id: { type: String, unique: true }, // e.g., "ALERT-20251022-001"
