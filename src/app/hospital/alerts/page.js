@@ -7,6 +7,7 @@ import React, { useEffect } from "react";
 const Alerts = () => {
   const [alerts, setAlerts] = React.useState([]);
   const [refresh, setRefresh] = React.useState(false);
+  const [changealert, setChangealert] = React.useState({message:"", color:""});
   useEffect(() => {
     // Fetch alerts from the API
     const fetchAlerts = async () => {
@@ -20,7 +21,6 @@ const Alerts = () => {
         });
         const data = await response.json();
         setAlerts(data);
-        console.log(data);
       } catch (error) {
         console.error("Error fetching alerts:", error);
       }
@@ -48,6 +48,7 @@ const Alerts = () => {
           <p className="txt-light">Monitor and manage patient alerts</p>
         </div>
         <div>
+          {changealert.message!=="" && <p className={`text-${changealert.color}`}>{changealert.message}</p>}
           <h2>
             Active alerts{" "}
             <span className="missed-doses-text">
@@ -71,6 +72,7 @@ const Alerts = () => {
                 time={formatDuration(new Date() - new Date(alert.createdAt))}
                 key={alert._id}
                 setRefresh={setRefresh}
+                setChangealert={setChangealert}
               />
             );
           })}
@@ -99,6 +101,7 @@ const Alerts = () => {
                 time={formatDuration(new Date() - new Date(alert.createdAt))}
                 key={alert._id}
                 setRefresh={setRefresh}
+                setChangealert={setChangealert}
               />;
             })}
         </div>
