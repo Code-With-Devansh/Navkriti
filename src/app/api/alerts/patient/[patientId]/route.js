@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/mongoose";
 import Alert from "@/models/alert";
 import { NextResponse } from "next/server";
-
+import { checkPermission } from '@/middleware/adminAuth';
 export async function GET(_, { params }) {
   try {
     const auth = await checkPermission(request, "view_patients");

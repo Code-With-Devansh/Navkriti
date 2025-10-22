@@ -2,7 +2,7 @@ import dbConnect from "@/lib/mongoose";
 import Alert from "@/models/alert";
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
-
+import { checkPermission } from '@/middleware/adminAuth';
 function genId() {
   const d = new Date().toISOString().split("T")[0].replace(/-/g, "");
   return `ALERT-${d}-${uuidv4().slice(0, 4).toUpperCase()}`;
