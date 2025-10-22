@@ -2,7 +2,6 @@ import dbConnect from "@/lib/mongoose";
 import Alert from "@/models/alert";
 import { checkPermission } from '@/middleware/adminAuth';
 import { NextResponse } from "next/server";
-import { checkPermission } from '@/middleware/adminAuth';
 // GET all alerts (with filters)
 export async function GET(req) {
   try {
