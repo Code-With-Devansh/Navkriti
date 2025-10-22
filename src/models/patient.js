@@ -121,6 +121,13 @@ const patientSchema = new mongoose.Schema(
       risk_score: Number,
       risk_factors: [String],
     },
+    current_alerts: {
+      has_active_sos: { type: Boolean, default: false },
+      has_active_medication_alert: { type: Boolean, default: false },
+      latest_alert_id: { type: mongoose.Schema.Types.ObjectId, ref: "Alert" },
+      latest_alert_type: String,
+      alert_count_last_7_days: { type: Number, default: 0 },
+    },
   },
   {
     timestamps: true,
