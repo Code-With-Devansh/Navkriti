@@ -35,11 +35,11 @@ export async function POST(request, { params }) {
       problem,
       followup,
       alert_type,
-      medicines, // Array of medicines
+      prescription, // Array of medicines
     } = body;
 
     // Validate required fields
-    if (!dept || !medicines || medicines.length === 0) {
+    if (!dept || !prescription || prescription.length === 0) {
       return NextResponse.json(
         { success: false, error: 'Department and at least one medicine are required' },
         { status: 400 }
@@ -47,7 +47,7 @@ export async function POST(request, { params }) {
     }
 
     // Validate medicines
-    for (const med of medicines) {
+    for (const med of prescription) {
       if (!med.name) {
         return NextResponse.json(
           { success: false, error: 'Medicine name is required' },
@@ -63,7 +63,7 @@ export async function POST(request, { params }) {
     }
 
     // Format medicines with proper structure
-    const formattedMedicines = medicines.map(med => ({
+    const formattedMedicines = prescription.map(med => ({
       name: med.name,
       color: med.color || 'white',
       dosage: med.dosage || '1 tablet',

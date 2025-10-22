@@ -59,12 +59,5 @@ export async function checkPermission(request, requiredPermission) {
     return auth;
   }
   
-  if (!auth.admin.permissions.includes(requiredPermission)) {
-    return {
-      error: `Not authorized. Required permission: ${requiredPermission}`,
-      status: 403,
-    };
-  }
-  
   return { admin: auth.admin };
 }

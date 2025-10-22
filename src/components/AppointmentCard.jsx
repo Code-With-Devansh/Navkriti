@@ -1,27 +1,27 @@
 import React from 'react'
 
-const AppointmentCard = () => {
+const AppointmentCard = ({patient}) => {
   return (
     <div className='appointment-card'>
       <div className='introPara'>
         <i className='fa-regular fa-user'></i>
         <div>
-          <h3>Devesh Sharma</h3>
+          <h3>{patient.name}</h3>
           <p className='text-light'>Follow-up</p>
         </div>
       </div>
       <div className='detailsPara'>
         <div>
           <i className="fa-solid fa-clock"></i>
-          10:00 AM
+          {patient.med_history[patient.med_history.length-1].problem}
         </div>
         <div>
           <i className="fa-solid fa-user"></i>
-          Dr. Devesh
+          {patient.med_history[patient.med_history.length-1].doctor_name}
         </div>
         <div>
           <i className="fa-solid fa-location-dot"></i>
-          Room 203
+          {patient.med_history[patient.med_history.length-1].dept}
         </div>
       </div>
     </div>

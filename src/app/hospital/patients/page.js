@@ -1,33 +1,25 @@
 "use client";
 import SideBar from "@/components/SideBar";
-import React, { use, useState, useEffect } from "react";
-import styles from "./patients.module.css";
+import React, { useState } from "react";
 import PatientCard from "@/components/PatientCard";
+import { usePatients } from "@/store/patientStore";
+import styles from "./patients.module.css";
 
 const Patients = () => {
-  const [patients, Setpatients] = useState([]);
-  useEffect(() => {
-    //fetch patients from api and set to state
-    const fetchTotalPatients = async () => {
-      try {
-        const response = await fetch("/api/admin/patients", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-            "Content-Type": "application/json",
-          },
-        });
-        const data = await response.json();
-        Setpatients(data.data || []);
-      } catch (error) {
-        console.error("Error fetching total patients:", error);
-      }
-    };
-    fetchTotalPatients();
-  }, []);
+  const { patients, missedDosesMap, loading } = usePatients();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredPatients = patients.filter(
+    p =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.ph_number.toString().includes(searchTerm)
+  );
+
+  if (loading) return <p style={{ textAlign: "center", padding: "40px" }}>Loading patients...</p>;
 
   return (
     <div>
-      <SideBar active={"patients"} />
+      <SideBar active="patients" />
       <div className={styles.container}>
         <div className={styles.topSection}>
           <div>
@@ -40,40 +32,41 @@ const Patients = () => {
               <input
                 type="text"
                 placeholder="Search patients"
-                name="patient_name"
-                id="patient_name"
+                value={searchTerm}
                 className={styles.searchInput}
+                onChange={e => setSearchTerm(e.target.value)}
               />
             </div>
           </div>
         </div>
 
         <div className="container">
-          <div className="patient-container">
-            {patients.map((patient) => {
-              let follow_up = null;
+          {filteredPatients.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "40px" }}>No patients found</div>
+          ) : (
+            <div className="patient-container">
+              {filteredPatients.map(p => {
+                const follow_up = p.med_history
+                  .map(m => new Date(m.followup))
+                  .filter(d => d >= new Date())
+                  .sort((a, b) => a - b)[0];
 
-              patient.med_history.forEach((e) => {
-                const followupDate = new Date(e.followup);
-                if (followupDate >= new Date()) {
-                  if (follow_up === null || followupDate < follow_up) {
-                    follow_up = followupDate;
-                  }
-                }
-              });
-
-              return (
-                <PatientCard
-                  key={patient._id} // always add a key when mapping
-                  name={patient.name}
-                  age={patient.age}
-                  follow_up={patient.med_history.length > 0 ? follow_up:"N/A"}
-                  condition = {patient.med_history.length > 0 ? patient.med_history[patient.med_history.length - 1].problem : "N/A"}
-                  missed_doses = {0}
-                />
-              );
-            })}
-          </div>
+                return (
+                  <PatientCard
+                    key={p._id}
+                    id={p._id}
+                    name={p.name}
+                    age={p.age}
+                    sex={p.sex}
+                    phone={p.ph_number}
+                    follow_up={follow_up ? follow_up.toLocaleDateString() : "N/A"}
+                    condition={p.med_history?.[p.med_history.length - 1]?.problem || "N/A"}
+                    missed_doses={missedDosesMap[p._id] || 0}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
