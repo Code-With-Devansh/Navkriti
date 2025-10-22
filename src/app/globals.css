@@ -2450,6 +2450,11 @@ Tailwind utilities used in PatientRegister.jsx
   }
 
   .sidebar{
+    width: 0px;
+    transition: width 0.3s ease-in-out;
+  }
+
+  .sidebar a{
     display: none;
   }
 
@@ -2464,6 +2469,11 @@ Tailwind utilities used in PatientRegister.jsx
     margin: 10px;
     border: none;
     background: transparent;
+    position: absolute;
+    top: 25px;
+    right: 100px;
+    cursor: pointer;
+    z-index: 10000;
   }
   
   .menu div{

@@ -1,4 +1,4 @@
-"use client"
+
 import Link from 'next/link'
 import React from 'react'
 
@@ -18,11 +18,6 @@ const Header = () => {
             <Link href={"/"}><i className="fa-solid fa-moon"></i></Link>
           </li>
         </ul>
-        <button className='menu' onClick={toggleAside}>
-          <div></div>
-          <div></div>
-          <div></div>
-        </button>
       </nav>
     </header>
   )
