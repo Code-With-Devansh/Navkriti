@@ -11,9 +11,18 @@ function genId() {
 export async function POST(req) {
   await dbConnect();
   const body = await req.json();
+
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const exists = await Alert.findOne({
+    patient_id: body.patient_id,
+    category: "medication",
+    createdAt: { $gte: since },
+  });
+  if (exists) return NextResponse.json({ message: "Alert already exists" });
+
   const alert = await Alert.create({
     alert_id: genId(),
-    category: "sos",
+    category: "medication",
     ...body,
   });
   return NextResponse.json(alert, { status: 201 });
