@@ -1,4 +1,4 @@
-import dbConnect from '@/lib/mongoose';
+import dbConnect from "@/lib/mongoose";
 import Alert from "@/models/alert";
 import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
@@ -9,21 +9,37 @@ function genId() {
 }
 
 export async function POST(req) {
-  await dbConnect();
-  const body = await req.json();
+  try {
+    const auth = await checkPermission(request, "view_patients");
 
-  const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const exists = await Alert.findOne({
-    patient_id: body.patient_id,
-    category: "medication",
-    createdAt: { $gte: since },
-  });
-  if (exists) return NextResponse.json({ message: "Alert already exists" });
+    if (auth.error) {
+      return NextResponse.json(
+        { success: false, error: auth.error },
+        { status: auth.status }
+      );
+    }
+    await dbConnect();
+    const body = await req.json();
 
-  const alert = await Alert.create({
-    alert_id: genId(),
-    category: "medication",
-    ...body,
-  });
-  return NextResponse.json(alert, { status: 201 });
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const exists = await Alert.findOne({
+      patient_id: body.patient_id,
+      category: "medication",
+      createdAt: { $gte: since },
+    });
+    if (exists) return NextResponse.json({ message: "Alert already exists" });
+
+    const alert = await Alert.create({
+      alert_id: genId(),
+      category: "medication",
+      ...body,
+    });
+    return NextResponse.json(alert, { status: 201 });
+  } catch (error) {
+    console.error("Get patients error:", error);
+    return NextResponse.json(
+      { success: false, error: "Failed to fetch alerts" },
+      { status: 500 }
+    );
+  }
 }
