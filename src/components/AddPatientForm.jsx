@@ -5,12 +5,14 @@ import SideBar from "./SideBar";
 const AddPatient = () => {
 
   return (
-    <div className="form-container patient-register-container">
+      <>
       <SideBar active={"add patient"} />
+      <div className="form-container patient-register-container">
       <div className="right">
-        <PatientRegister/>
+        <PatientRegister />
       </div>
     </div>
+    </>
   );
 };
 

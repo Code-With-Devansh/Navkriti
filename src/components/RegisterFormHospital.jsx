@@ -74,7 +74,7 @@ const RegisterFormHospital = () => {
         <Image src={"/images/doctor-loginpage.png"} fill={true} objectFit="contain" alt="Doctor image"/>
       </div>
       <div className="right">
-        <h2>Hospital Register</h2>
+        <h2 style={{fontSize:"30px"}}>Hospital Register</h2>
         {error && (
           <div
             className="error-message"

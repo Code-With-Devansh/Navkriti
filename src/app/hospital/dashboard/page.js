@@ -118,12 +118,12 @@ useEffect(() => {
   return () => chartInstanceRef.current?.destroy();
 }, [next7DaysData]);
 
-  if (loading)
-    return (
-      <p style={{ textAlign: "center", padding: "40px" }}>
-        Loading dashboard...
-      </p>
-    );
+  // if (loading)
+  //   return (
+  //     <p style={{ textAlign: "center", padding: "40px" }}>
+  //       Loading dashboard...
+  //     </p>
+  //   );
 
   return (
     <>

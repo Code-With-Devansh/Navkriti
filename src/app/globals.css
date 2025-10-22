@@ -30,8 +30,6 @@ a {
   color: black;
 }
 
-
-
 header {
   display: flex;
   align-items: center;
@@ -39,7 +37,7 @@ header {
   padding: 30px 30px;
   width: 100%;
   background: var(--light-bg-color);
-  height: 150px;
+  height: 120px;
   margin-bottom: 40px;
   position: fixed;
   top: 0;
@@ -51,7 +49,7 @@ main {
   margin: 200px auto;
 }
 
-.sidebar{
+.sidebar {
   width: 325px;
   height: 100%;
   background: var(--light-bg-color);
@@ -66,12 +64,12 @@ main {
   z-index: 1;
 }
 
-.sidebar a i{
+.sidebar a i {
   font-size: 20px;
   margin-right: 10px;
 }
 
-.sidebar a{
+.sidebar a {
   margin: 5px;
   padding: 10px;
   border-radius: 5px;
@@ -79,18 +77,18 @@ main {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.sidebar a:hover{
+.sidebar a:hover {
   background-color: var(--primary-color);
   color: var(--light-bg-color);
 }
 
-.sidebar a.active{
+.sidebar a.active {
   background-color: var(--primary-color);
   color: var(--light-bg-color);
 }
 
-.logo{
-    z-index: 1000;
+.logo {
+  z-index: 1000;
 }
 
 .logo div {
@@ -208,7 +206,8 @@ li {
   border-bottom: 2px solid var(--primary-color);
 }
 
-.right a, .right button {
+.right a,
+.right button {
   width: 100%;
   text-align: center;
   padding: 15px 20px;
@@ -224,51 +223,51 @@ li {
   background-color: var(--primary-color);
 }
 
-.container{
+.container {
   position: absolute;
   left: 400px;
 }
 
-.cards-container{
+.cards-container {
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
 }
 
-.visual-section{
+.visual-section {
   margin-top: 100px;
   display: flex;
   gap: 50px;
 }
 
-.visual-section h2{
+.visual-section h2 {
   font-size: 30px;
   margin-bottom: 20px;
 }
 
-.dashboard-container h2{
+.dashboard-container h2 {
   font-size: 40px;
   margin-bottom: 10px;
 }
 
-.dashboard-container p{
+.dashboard-container p {
   color: var(--font-color-light);
 }
 
-.recent-notifcation-container{
-  margin-left: 50px;
+.recent-notifcation-container {
+  margin: 0px 50px;
 }
-.recent-notifcation-container li{
+.recent-notifcation-container li {
   position: relative;
   margin-bottom: 20px;
 }
 
-.recent-notifcation-container li p{
+.recent-notifcation-container li p {
   color: var(--font-color-light);
   margin: 5px 0px;
 }
 
-.recent-notifcation-container li::before{
+.recent-notifcation-container li::before {
   content: "";
   width: 10px;
   height: 10px;
@@ -279,7 +278,7 @@ li {
   border-radius: 100%;
 }
 
-li.emergency::before{
+li.emergency::before {
   content: "";
   width: 10px;
   height: 10px;
@@ -290,27 +289,27 @@ li.emergency::before{
   border-radius: 100%;
 }
 
-.dashboard-card{
+.dashboard-card {
   background: var(--light-bg-color);
   padding: 20px;
   margin-top: 20px;
   border-radius: 5px;
 }
 
-.dashboard-card p{
+.dashboard-card p {
   margin-bottom: 20px;
 }
 
-.dashboard-card p:last-child{
+.dashboard-card p:last-child {
   color: var(--font-color-light);
   margin-top: 20px;
 }
 
-.dashboard-card p i{
+.dashboard-card p i {
   margin: 0px 20px;
 }
 
-.dashboard-card h3{
+.dashboard-card h3 {
   font-size: 35px;
 }
 
@@ -323,14 +322,14 @@ footer {
   background: var(--light-bg-color);
 }
 
-.patient-container{
+.patient-container {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   gap: 40px;
 }
 
-.patient-card{
+.patient-card {
   width: 300px;
   background: var(--light-bg-color);
   padding-top: 20px;
@@ -338,17 +337,17 @@ footer {
   margin-top: 20px;
 }
 
-.patient-card > div{
+.patient-card > div {
   display: flex;
   align-items: center;
   justify-content: space-around;
 }
 
-.profile-content{
+.profile-content {
   margin-bottom: 30px;
 }
 
-.profile-content > div > h2{
+.profile-content > div > h2 {
   font-size: 30px;
   margin-bottom: 10px;
 }
@@ -366,36 +365,36 @@ footer {
   margin: 0px 20px;
 }
 
-.txt-light{
+.txt-light {
   color: var(--font-color-light);
 }
 
-.details-content{
+.details-content {
   margin-top: 30px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.details-content > div{
+.details-content > div {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 80%;
 }
 
-.details-content > div > p:last-child{
+.details-content > div > p:last-child {
   font-weight: 600;
 }
 
-.missed-doses-text{
+.missed-doses-text {
   color: var(--primary-light-color);
   background: var(--secondary-color);
   padding: 5px 15px;
   border-radius: 10px;
 }
 
-.view-profile-btn{
+.view-profile-btn {
   display: inline-block;
   margin-top: 30px;
   padding: 15px 20px;
@@ -406,16 +405,16 @@ footer {
   text-align: center;
 }
 
-.introPara{
+.introPara {
   margin-bottom: 30px;
 }
 
-.introPara h2{
+.introPara h2 {
   margin-bottom: 10px;
   font-size: 30px;
 }
 
-.alert-card{
+.alert-card {
   background: var(--light-bg-color);
   padding: 20px;
   border-radius: 5px;
@@ -424,41 +423,41 @@ footer {
   padding: 20px;
 }
 
-.alert-card h3{
+.alert-card h3 {
   font-size: 25px;
   margin-bottom: 10px;
 }
 
-.alert-card p{
+.alert-card p {
   font-size: 13px;
 }
 
-.emergency-card{
+.emergency-card {
   border: 2px solid var(--secondary-color);
   background: #fdfbfb;
 }
 
-.doses-missed-card{
+.doses-missed-card {
   border: 2px solid var(--light-bg-color);
   background: var(--light-bg-color);
 }
 
-.alert-card > div{
+.alert-card > div {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-.alert-card{
+.alert-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.alert-card:last-child{
+.alert-card:last-child {
   margin-bottom: 40px;
 }
 
-.alert-card button{
+.alert-card button {
   border: none;
   outline: none;
   padding: 15px 20px;
@@ -468,34 +467,33 @@ footer {
   border-radius: 5px;
 }
 
-.fa-circle-info{
+.fa-circle-info {
   color: var(--secondary-color);
   font-size: 30px;
 }
 
-.fa-signal{
+.fa-signal {
   color: var(--primary-color);
   font-size: 30px;
 }
 
-.fa-thumbs-up{
+.fa-thumbs-up {
   font-size: 30px;
   color: var(--primary-color);
 }
 
-.resolved-alert-text{
+.resolved-alert-text {
   background-color: var(--font-color-light);
   padding: 10px 20px;
   border-radius: 10px;
   color: white;
-
 }
 
 .patient-register .left {
   display: none;
 }
 
-.patient-register .right{
+.patient-register .right {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -520,7 +518,7 @@ Patient Register Form Customizations
   width: 100% !important;
   display: flex !important;
   justify-content: center !important;
-  padding: 2rem !important;
+  padding: 0rem 2rem !important;
 }
 
 /* Active tab styling with primary background */
@@ -925,7 +923,9 @@ Tailwind utilities used in PatientRegister.jsx
 
 /* Transition utilities */
 .transition {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter,
+    backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -1660,15 +1660,18 @@ Tailwind utilities used in PatientRegister.jsx
 }
 
 .shadow-md {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 .shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 .shadow-none {
@@ -1900,7 +1903,8 @@ Tailwind utilities used in PatientRegister.jsx
 }
 
 .transition-colors {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-property: color, background-color, border-color,
+    text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
@@ -2038,7 +2042,8 @@ Tailwind utilities used in PatientRegister.jsx
 }
 
 .hover\:shadow-lg:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .hover\:scale-105:hover {
@@ -2103,20 +2108,20 @@ Tailwind utilities used in PatientRegister.jsx
   .sm\:block {
     display: block;
   }
-  
+
   .sm\:flex {
     display: flex;
   }
-  
+
   .sm\:hidden {
     display: none;
   }
-  
+
   .sm\:text-base {
     font-size: 1rem;
     line-height: 1.5rem;
   }
-  
+
   .sm\:text-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
@@ -2128,41 +2133,41 @@ Tailwind utilities used in PatientRegister.jsx
   .md\:block {
     display: block;
   }
-  
+
   .md\:flex {
     display: flex;
   }
-  
+
   .md\:hidden {
     display: none;
   }
-  
+
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
+
   .md\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  
+
   .md\:col-span-2 {
     grid-column: span 2 / span 2;
   }
-  
+
   .md\:w-1\/2 {
     width: 50%;
   }
-  
+
   .md\:text-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
   }
-  
+
   .md\:text-xl {
     font-size: 1.25rem;
     line-height: 1.75rem;
   }
-  
+
   .md\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
@@ -2174,27 +2179,27 @@ Tailwind utilities used in PatientRegister.jsx
   .lg\:block {
     display: block;
   }
-  
+
   .lg\:flex {
     display: flex;
   }
-  
+
   .lg\:hidden {
     display: none;
   }
-  
+
   .lg\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  
+
   .lg\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  
+
   .lg\:w-1\/3 {
     width: 33.333333%;
   }
-  
+
   .lg\:text-xl {
     font-size: 1.25rem;
     line-height: 1.75rem;
@@ -2206,29 +2211,28 @@ Tailwind utilities used in PatientRegister.jsx
   .xl\:block {
     display: block;
   }
-  
+
   .xl\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  
+
   .xl\:text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
   }
 }
 
-.patient-register-container .right{
+.patient-register-container .right {
   width: 80vw !important;
 }
 
-.add-medicine-button{
+.add-medicine-button {
   width: auto !important;
 }
 
 .hover-cursor-pointer:hover {
   cursor: pointer !important;
 }
-
 
 .appointments-container {
   display: flex;
@@ -2238,7 +2242,7 @@ Tailwind utilities used in PatientRegister.jsx
   flex-wrap: wrap;
   gap: 40px;
 }
-.complete-appointments-container >div > h3{
+.complete-appointments-container > div > h3 {
   font-size: 25px;
 }
 
@@ -2250,23 +2254,23 @@ Tailwind utilities used in PatientRegister.jsx
   border-radius: 10px;
 }
 
-.appointment-card .introPara{
+.appointment-card .introPara {
   display: flex;
   align-items: center;
   justify-content: space-around;
 }
 
-.appointment-card .introPara h3{
+.appointment-card .introPara h3 {
   font-size: 25px;
 }
 
-.appointment-card .introPara p{
+.appointment-card .introPara p {
   font-size: 12px;
   margin-top: 10px;
   font-weight: 600;
 }
 
-.appointment-card .introPara i{
+.appointment-card .introPara i {
   font-size: 30px;
   width: 80px;
   height: 80px;
@@ -2277,22 +2281,254 @@ Tailwind utilities used in PatientRegister.jsx
   justify-content: center;
 }
 
-.detailsPara i{
+.detailsPara i {
   color: var(--font-color-light);
   margin-right: 10px;
 }
 
-.detailsPara div{
+.detailsPara div {
   margin-top: 10px;
 }
 
-.complete-appointments-container{
+.complete-appointments-container {
   margin: 30px 0px;
 }
 
-.patient-register-wrapper{
+.patient-register-wrapper {
   width: 60vw !important;
   position: relative !important;
   left: 50% !important;
-  transform: translateX(-30%) !important;
+  transform: translate(-30%,-10%) !important;
+}
+
+.sos-btn {
+  background: red;
+  color: white;
+  border: none;
+  padding: 50px 50px;
+  border-radius: 100%;
+  box-shadow: 5px 5px 15px red;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  animation: sosBlink 1.5s infinite;
+}
+
+.sos-btn-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70vw;
+  padding-top: 30px;
+}
+
+.sos-btn i {
+  font-size: 20px;
+}
+
+@keyframes sosBlink {
+  0% {
+    box-shadow: 0 0 5px red;
+  }
+  50% {
+    box-shadow: 0 0 20px red;
+    transform : scale(1.05)
+  }
+  100% {
+    box-shadow: 0 0 5px red;
+  }
+}
+
+
+.menu{
+  display: none;
+}
+
+
+/* making responsive */
+
+
+/* / screen */
+@media screen and (max-width: 1070px) {
+  
+  .card-container{
+    flex-direction: column;
+
+  }
+  .card{
+    margin-bottom: 50px;
+    width: 80vw;
+  }
+}
+
+
+/* /patient/login screen */
+@media screen and (max-width: 890px) {
+  .patient-login, .form-container{
+    flex-direction: column;
+    width: 90vw;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    transform: translateY(-15%);
+  }
+
+  .sidebar{
+    width: 250px;
+  }
+
+  .patient-login .right, .form-container .right{
+    width: 100% !important;
+    margin: auto !important;
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(-8%);
+  }
+
+  .patient-card .right h2{
+    font-size: 20px;
+    text-align: left;
+  }
+
+  .patient-register-wrapper{
+    transform: translateX(8%);
+  }
+}
+
+
+@media screen and (max-width: 830px) {
+  .form-container{
+    flex-direction: column;
+  }
+
+  .form-container .right{
+    width: 80% !important;
+    margin: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* transform: translateX(-5%); */
+  }
+}
+
+/* dashboard */
+@media screen and (max-width: 1380px) {
+  .dashboard-container{
+    flex-direction: column;
+    position: static;
+  }
+
+  .dashboard-container .left,
+  .dashboard-container .right{
+    width: 90% !important;
+    margin: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(0%);
+  }
+
+
+  nav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    background: var(--light-bg-color);
+    z-index: 100;
+  }
+
+  .sidebar{
+    width: 0px;
+    transition: width 0.3s ease-in-out;
+  }
+
+  .sidebar a{
+    display: none;
+  }
+
+  .menu{
+    display: block;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    margin: 10px;
+    border: none;
+    background: transparent;
+    position: absolute;
+    top: 25px;
+    right: 100px;
+    cursor: pointer;
+    z-index: 10000;
+  }
+  
+  .menu div{
+    background: black;
+    display: block;
+    width: 50px;
+    height: 10px;
+  }
+
+  .patient-register-container{
+    transform: translate(-5%);
+  }
+
+  .container{
+    width: 90% !important;
+    position: static;
+    margin: auto !important;
+  }
+
+  .patient-register-wrapper {
+    width: 90vw !important;
+    position: static !important;
+    left: 50% !important;
+    transform: translate(-8%,0%) !important;
+  }
+
+}
+
+
+@media screen and (max-width: 730px) {
+  .alert-card h3{
+    font-size: 18px;
+  }
+
+  .alert-card{
+    flex-direction: column;
+    gap: 5px;
+  }
+  .alert-card i{
+    font-size: 18px;
+  }
+
+  .alert-card p{
+    font-size: 10px;
+  }
+
+  .alert-card button{
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+}
+
+
+@media screen and (max-width : 900px) {
+  .patient-register-wrapper{
+    transform: translate(15%,0%) !important;
+  } 
 }
