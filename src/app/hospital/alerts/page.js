@@ -1,3 +1,4 @@
+'use client';
 import AlertCard from '@/components/AlertCard'
 import ResolvedAlertCard from '@/components/ResolvedAlertCard';
 import SideBar from '@/components/SideBar'
