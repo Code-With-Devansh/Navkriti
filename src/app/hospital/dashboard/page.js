@@ -51,7 +51,7 @@ const DashBoardHospital = () => {
     return () => chartInstanceRef.current?.destroy();
   }, []);
 
-  if (loading) return <p style={{ textAlign: "center", padding: "40px" }}>Loading dashboard...</p>;
+  // if (loading) return <p style={{ textAlign: "center", padding: "40px" }}>Loading dashboard...</p>;
 
   return (
     <>

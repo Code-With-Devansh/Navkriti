@@ -25,7 +25,7 @@ const Appointments = () => {
 
   const sortedDates = Object.keys(appointmentsByDate).sort((a, b) => new Date(b) - new Date(a));
 
-  if (loading) return <p style={{ textAlign: "center", padding: "40px" }}>Loading appointments...</p>;
+  // if (loading) return <p style={{ textAlign: "center", padding: "40px" }}>Loading appointments...</p>;
 
   return (
     <div>

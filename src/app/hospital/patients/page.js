@@ -15,7 +15,7 @@ const Patients = () => {
       p.ph_number.toString().includes(searchTerm)
   );
 
-  if (loading) return <p style={{ textAlign: "center", padding: "40px" }}>Loading patients...</p>;
+  // if (loading) return <p style={{ textAlign: "center", padding: "40px" }}>Loading patients...</p>;
 
   return (
     <div>

@@ -25,7 +25,7 @@ const PatientSideBar = ({ active }) => {
         }
     ]
     return (
-        <aside className='sidebar'>
+        <aside className='sidebar show-aside' id='sidebar'>
             {
                 links.map((link, index) => (
                     link.label.toLowerCase() !== active ?

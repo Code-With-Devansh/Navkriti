@@ -37,7 +37,7 @@ header {
   padding: 30px 30px;
   width: 100%;
   background: var(--light-bg-color);
-  height: 150px;
+  height: 120px;
   margin-bottom: 40px;
   position: fixed;
   top: 0;
@@ -255,7 +255,7 @@ li {
 }
 
 .recent-notifcation-container {
-  margin-left: 50px;
+  margin: 0px 50px;
 }
 .recent-notifcation-container li {
   position: relative;
@@ -518,7 +518,7 @@ Patient Register Form Customizations
   width: 100% !important;
   display: flex !important;
   justify-content: center !important;
-  padding: 2rem !important;
+  padding: 0rem 2rem !important;
 }
 
 /* Active tab styling with primary background */
@@ -2298,7 +2298,7 @@ Tailwind utilities used in PatientRegister.jsx
   width: 60vw !important;
   position: relative !important;
   left: 50% !important;
-  transform: translateX(-30%) !important;
+  transform: translate(-30%,-10%) !important;
 }
 
 .sos-btn {
@@ -2339,4 +2339,186 @@ Tailwind utilities used in PatientRegister.jsx
   100% {
     box-shadow: 0 0 5px red;
   }
+}
+
+
+.menu{
+  display: none;
+}
+
+
+/* making responsive */
+
+
+/* / screen */
+@media screen and (max-width: 1070px) {
+  
+  .card-container{
+    flex-direction: column;
+
+  }
+  .card{
+    margin-bottom: 50px;
+    width: 80vw;
+  }
+}
+
+
+/* /patient/login screen */
+@media screen and (max-width: 890px) {
+  .patient-login, .form-container{
+    flex-direction: column;
+    width: 90vw;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    transform: translateY(-15%);
+  }
+
+  .sidebar{
+    width: 250px;
+  }
+
+  .patient-login .right, .form-container .right{
+    width: 100% !important;
+    margin: auto !important;
+    display: flex;
+    margin: 0px;
+    padding: 0px;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(-8%);
+  }
+
+  .patient-card .right h2{
+    font-size: 20px;
+    text-align: left;
+  }
+
+  .patient-register-wrapper{
+    transform: translateX(8%);
+  }
+}
+
+
+@media screen and (max-width: 830px) {
+  .form-container{
+    flex-direction: column;
+  }
+
+  .form-container .right{
+    width: 80% !important;
+    margin: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* transform: translateX(-5%); */
+  }
+}
+
+/* dashboard */
+@media screen and (max-width: 1380px) {
+  .dashboard-container{
+    flex-direction: column;
+    position: static;
+  }
+
+  .dashboard-container .left,
+  .dashboard-container .right{
+    width: 90% !important;
+    margin: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateX(0%);
+  }
+
+
+  nav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    background: var(--light-bg-color);
+    z-index: 100;
+  }
+
+  .sidebar{
+    display: none;
+  }
+
+  .menu{
+    display: block;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    margin: 10px;
+    border: none;
+    background: transparent;
+  }
+  
+  .menu div{
+    background: black;
+    display: block;
+    width: 50px;
+    height: 10px;
+  }
+
+  .patient-register-container{
+    transform: translate(-5%);
+  }
+
+  .container{
+    width: 90% !important;
+    position: static;
+    margin: auto !important;
+  }
+
+  .patient-register-wrapper {
+    width: 90vw !important;
+    position: static !important;
+    left: 50% !important;
+    transform: translate(-8%,0%) !important;
+  }
+
+}
+
+
+@media screen and (max-width: 730px) {
+  .alert-card h3{
+    font-size: 18px;
+  }
+
+  .alert-card{
+    flex-direction: column;
+    gap: 5px;
+  }
+  .alert-card i{
+    font-size: 18px;
+  }
+
+  .alert-card p{
+    font-size: 10px;
+  }
+
+  .alert-card button{
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+}
+
+
+@media screen and (max-width : 900px) {
+  .patient-register-wrapper{
+    transform: translate(15%,0%) !important;
+  } 
 }
