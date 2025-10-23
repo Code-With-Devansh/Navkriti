@@ -41,7 +41,7 @@ const medicalHistorySchema = new mongoose.Schema(
     dept: { type: String, required: true },
     doctor_name: { type: String },
     followup: { type: Date },
-    alert_type: { type: String, default: "Low" },
+    alert_type: { type: String, default: "low" },
     problem: { type: String },
     prescription: [prescriptionSchema],
     visit_date: { type: Date, default: Date.now },

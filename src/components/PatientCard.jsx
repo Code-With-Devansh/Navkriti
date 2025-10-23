@@ -1,8 +1,42 @@
 import Link from "next/link";
 import React from "react";
-
+import { Trash2 } from "lucide-react";
 const PatientCard = (props) => {
-  const { name, age, follow_up, condition, missed_doses } = props;
+  const {
+    name,
+    age,
+    follow_up,
+    condition,
+    missed_doses,
+    setRefresh,
+    setAlert,
+  } = props;
+  const deletePatient = () => {
+    fetch(`/api/admin/patients/${props.id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+      },
+    })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok || !data.success)
+          throw new Error(data.error || "Delete failed");
+        setAlert({
+          message: "Patient deleted successfully",
+          color: "green",
+        });
+        setRefresh((prev) => !prev);
+      })
+      .catch((err) => {
+        setAlert({
+          message: err.message || "Error deleting patient",
+          color: "red",
+        });
+      });
+  };
+
   return (
     <div className="patient-card">
       <div className="profile-content">
@@ -10,6 +44,9 @@ const PatientCard = (props) => {
           <i className={"fa-regular fa-user userIcon"}></i>
         </div>
         <div>
+          <span>
+            <Trash2 color="#FF0000" onClick={deletePatient} />
+          </span>
           <h2>{name}</h2>
           <p className="txt-light"> Age : {age}</p>
         </div>

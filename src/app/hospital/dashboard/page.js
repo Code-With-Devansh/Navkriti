@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useMemo, useEffect } from "react";
+import React, { useRef, useMemo, useEffect, useState } from "react";
 import Chart from "chart.js/auto";
 import DashBoardCard from "@/components/DashBoardCard";
 import SideBar from "@/components/SideBar";
@@ -7,64 +7,88 @@ import { usePatients } from "@/store/patientStore";
 import Link from "next/link";
 
 const DashBoardHospital = () => {
-  const [patientChangePercent, setPatientChangePercent] = React.useState(0);
-  const { patients, missedDosesMap, loading } = usePatients();
+  const [patientChangePercent, setPatientChangePercent] = useState(0);
+  // const [refresh, setRefresh] = useState(false);
+  const { patients, missedDosesMap, loading, alerts, setAlerts, refreshAlerts, setRefreshAlerts  } = usePatients();
+
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
+
+  // Fetch alerts
+  // useEffect(() => {
+  //   const fetchAlerts = async () => {
+  //     try {
+  //       const res = await fetch("/api/alerts", {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+  //         },
+  //       });
+  //       const data = await res.json();
+  //       setAlerts(data);
+  //     } catch (err) {
+  //       console.error("Error fetching alerts:", err);
+  //     }
+  //   };
+  //   fetchAlerts();
+  // }, [refresh]);
 
   const today = new Date();
   const next7Days = new Date();
   next7Days.setDate(today.getDate() + 7);
 
-  const { totalPatients, totalMissedDoses, alertType, totalUpcomingCheckups } =
-    useMemo(() => {
-      let totalMissed = 0;
-      let alert = "low";
+  const {
+    totalPatients,
+    totalMissedDoses,
+    alertType,
+    totalUpcomingCheckups,
+  } = useMemo(() => {
+    let totalMissed = 0;
+    let alert = "low";
+    let upcomingCheckups = 0;
 
-      // Total upcoming checkups in next 7 days
-      let upcomingCheckups = 0;
-
-      patients.forEach((p) => {
-        // Missed doses calculation
-        const recentIntakes = (p.medicine_intakes || [])
-          .filter((i) => i?.scheduled_time)
-          .sort(
-            (a, b) => new Date(b.scheduled_time) - new Date(a.scheduled_time)
-          )
-          .slice(0, 15);
-
-        let consecutiveMissed = 0;
-        for (const intake of recentIntakes) {
-          if (intake.status === "missed") consecutiveMissed++;
-          else if (intake.status === "taken") break;
-        }
-        totalMissed += consecutiveMissed;
-
-        // Alert logic
-        const lastAlert =
-          p.med_history?.[p.med_history.length - 1]?.alert?.toLowerCase() || "";
-        if (
-          (lastAlert === "high" && consecutiveMissed > 2) ||
-          (lastAlert === "med" && consecutiveMissed > 5)
+    patients.forEach((p) => {
+      const recentIntakes = (p.medicine_intakes || [])
+        .filter((i) => i?.scheduled_time)
+        .sort(
+          (a, b) => new Date(b.scheduled_time) - new Date(a.scheduled_time)
         )
-          alert = "high";
-        else if (lastAlert === "med" || consecutiveMissed > 0)
-          alert = alert !== "high" ? "med" : alert;
+        .slice(0, 15);
 
-        // Upcoming checkups in next 7 days
-        upcomingCheckups += (p.med_history || []).filter((m) => {
-          const f = new Date(m.followup);
-          return f >= today && f <= next7Days;
-        }).length;
-      });
+      let consecutiveMissed = 0;
+      for (const intake of recentIntakes) {
+        if (intake.status === "missed") consecutiveMissed++;
+        else if (intake.status === "taken") break;
+      }
+      totalMissed += consecutiveMissed;
 
-      return {
-        totalPatients: patients.length,
-        totalMissedDoses: totalMissed,
-        alertType: alert,
-        totalUpcomingCheckups: upcomingCheckups,
-      };
-    }, [patients]);
+      const lastAlert =
+        p.med_history?.[p.med_history.length - 1]?.alert?.toLowerCase() || "";
+      if (
+        (lastAlert === "high" && consecutiveMissed > 2) ||
+        (lastAlert === "med" && consecutiveMissed > 5)
+      )
+        alert = "high";
+      else if (lastAlert === "med" || consecutiveMissed > 0)
+        alert = alert !== "high" ? "med" : alert;
+
+      // Checkups in next 7 days
+      upcomingCheckups += (p.med_history || []).filter((m) => {
+        const f = new Date(m.followup);
+        return f >= today && f <= next7Days;
+      }).length;
+    });
+
+    return {
+      totalPatients: patients.length,
+      totalMissedDoses: totalMissed,
+      alertType: alert,
+      totalUpcomingCheckups: upcomingCheckups,
+    };
+  }, [patients]);
+
+  // Graph data for next 7 days
   const next7DaysData = useMemo(() => {
     const counts = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
     const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -84,46 +108,54 @@ const DashBoardHospital = () => {
       });
     });
 
-    // Return array in Mon–Sun order
     return ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(
       (d) => counts[d]
     );
   }, [patients]);
 
-useEffect(() => {
-  if (!chartRef.current) return;
-  if (chartInstanceRef.current) chartInstanceRef.current.destroy();
+  // Chart rendering
+  useEffect(() => {
+    if (!chartRef.current) return;
+    if (chartInstanceRef.current) chartInstanceRef.current.destroy();
 
-  chartInstanceRef.current = new Chart(chartRef.current, {
-    type: "line",
-    data: {
-      labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-      datasets: [
-        {
-          label: "Upcoming Checkups",
-          data: next7DaysData,
-          borderColor: "#2563eb",
-          backgroundColor: "rgba(37, 99, 235, 0.2)",
-          tension: 0,
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: true } },
-      scales: { y: { beginAtZero: true, precision: 0 } }
-    }
-  });
+    chartInstanceRef.current = new Chart(chartRef.current, {
+      type: "line",
+      data: {
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        datasets: [
+          {
+            label: "Upcoming Checkups",
+            data: next7DaysData,
+            borderColor: "#2563eb",
+            backgroundColor: "rgba(37, 99, 235, 0.2)",
+            tension: 0, // straight lines
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true } },
+        scales: { y: { beginAtZero: true, precision: 0 } },
+      },
+    });
 
-  return () => chartInstanceRef.current?.destroy();
-}, [next7DaysData]);
+    return () => chartInstanceRef.current?.destroy();
+  }, [next7DaysData]);
 
-  // if (loading)
-  //   return (
-  //     <p style={{ textAlign: "center", padding: "40px" }}>
-  //       Loading dashboard...
-  //     </p>
-  //   );
+  const activeAlertsCount = alerts.filter((a) => a.status === "pending").length;
+
+  // if (loading) return <p>Loading dashboard...</p>;
+const formatDuration = (ms) => {
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) return `${days} day${days !== 1 ? "s" : ""}`;
+    if (hours > 0) return `${hours} hour${hours !== 1 ? "s" : ""}`;
+    if (minutes > 0) return `${minutes} minute${minutes !== 1 ? "s" : ""}`;
+    return `${seconds} second${seconds !== 1 ? "s" : ""}`;
+  };
 
   return (
     <>
@@ -143,6 +175,7 @@ useEffect(() => {
               lastPara={`+${patientChangePercent}% from last week`}
             />
           </Link>
+
           <Link href="/hospital/patients">
             <DashBoardCard
               title="Missed Doses"
@@ -158,15 +191,17 @@ useEffect(() => {
               lastPara={`Alert Level: ${alertType.toUpperCase()}`}
             />
           </Link>
+
           <Link href="/hospital/alerts">
             <DashBoardCard
               title="Active Alerts"
-              count="5"
+              count={activeAlertsCount}
               color="red"
               iconClass="fa-solid fa-info"
-              lastPara="Urgent Action required"
+              lastPara="Urgent Action Required"
             />
           </Link>
+
           <Link href="/hospital/appointments">
             <DashBoardCard
               title="Upcoming Checkups"
@@ -186,18 +221,20 @@ useEffect(() => {
           <div className="recent-notifcation-container">
             <h2>Recent Notifications</h2>
             <ul>
-              <li className="emergency">
-                SOS alert from Devesh Sharma.<p>2 min ago</p>
-              </li>
-              <li>
-                3 patients missed their medication today.<p>1 hour ago</p>
-              </li>
-              <li>
-                New appointments scheduled for tomorrow.<p>3 hours ago</p>
-              </li>
-              <li className="emergency">
-                Vital signs alert for patient Rina Patel.<p>5 hours ago</p>
-              </li>
+              {alerts.slice(0, 4).map((alert) => (
+                <li
+                  key={alert._id}
+                  className={alert.status === "pending" ? "emergency" : ""}
+                >
+                  {alert.category} alert for {alert.patient_name}.
+                  <p>
+                    {
+                      formatDuration(new Date() - new Date(alert.createdAt)) +" ago"
+                    }
+                  </p>
+                </li>
+              ))}
+              {alerts.length === 0 && <li>No recent alerts.</li>}
             </ul>
           </div>
         </div>

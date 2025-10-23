@@ -143,7 +143,6 @@ export async function DELETE(request, { params }) {
         { status: 404 }
       );
     }
-    
     return NextResponse.json(
       {
         success: true,

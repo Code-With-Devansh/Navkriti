@@ -19,7 +19,7 @@ export async function POST(request, { params }) {
 
     await dbConnect();
     
-    const { id } = params;
+    const { id } = await params;
     
     if (!ObjectId.isValid(id)) {
       return NextResponse.json(

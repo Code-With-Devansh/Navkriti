@@ -1,33 +1,38 @@
 "use client";
+import React, { useEffect } from "react";
 import AlertCard from "@/components/AlertCard";
 import ResolvedAlertCard from "@/components/ResolvedAlertCard";
 import SideBar from "@/components/SideBar";
-import React, { useEffect } from "react";
+import { usePatients } from "@/store/patientStore"; // alerts now come from here
 
 const Alerts = () => {
-  const [alerts, setAlerts] = React.useState([]);
-  const [refresh, setRefresh] = React.useState(false);
-  const [changealert, setChangealert] = React.useState({message:"", color:""});
+  const { alerts, setAlerts, refreshAlerts, setRefreshAlerts } = usePatients();
+
+  // Fetch alerts only if not already fetched, or when refreshAlerts changes
   useEffect(() => {
-    // Fetch alerts from the API
+    const token = localStorage.getItem("adminToken");
+    if (!token) return;
+
     const fetchAlerts = async () => {
       try {
         const response = await fetch("/api/alerts", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+            authorization: `Bearer ${token}`,
           },
         });
         const data = await response.json();
-        setAlerts(data);
+        setAlerts(data || []);
       } catch (error) {
         console.error("Error fetching alerts:", error);
       }
     };
+
     fetchAlerts();
-  }, [refresh]);
-  function formatDuration(ms) {
+  }, [refreshAlerts, setAlerts]);
+
+  const formatDuration = (ms) => {
     const seconds = Math.floor(ms / 1000);
     const minutes = Math.floor(seconds / 60);
     const hours = Math.floor(minutes / 60);
@@ -37,7 +42,10 @@ const Alerts = () => {
     if (hours > 0) return `${hours} hour${hours !== 1 ? "s" : ""}`;
     if (minutes > 0) return `${minutes} minute${minutes !== 1 ? "s" : ""}`;
     return `${seconds} second${seconds !== 1 ? "s" : ""}`;
-  }
+  };
+
+  const pendingAlerts = alerts.filter((a) => a.status === "pending");
+  const resolvedAlerts = alerts.filter((a) => a.status !== "pending");
 
   return (
     <div>
@@ -47,64 +55,51 @@ const Alerts = () => {
           <h2>Alerts Page</h2>
           <p className="txt-light">Monitor and manage patient alerts</p>
         </div>
+
         <div>
-          {changealert.message!=="" && <p className={`text-${changealert.color}`}>{changealert.message}</p>}
           <h2>
             Active alerts{" "}
-            <span className="missed-doses-text">
-              {alerts.filter((a) => a.status === "pending").length}
-            </span>
+            <span className="missed-doses-text">{pendingAlerts.length}</span>
           </h2>
           {alerts.length === 0 && <p>No alerts found.</p>}
-          {alerts.map((alert) => {
-            // divide on based of status
 
-            if (alert.status !== "pending") return null;
-            return (
-              <AlertCard
-                alertype={alert.alert_type}
-                alert_id={alert._id}
-                patient_id={alert.patient_id}
-                iconClassName="fa-circle-info"
-                className={"emergency-card"}
-                patient_name={alert.patient_name}
-                message={alert.category}
-                time={formatDuration(new Date() - new Date(alert.createdAt))}
-                key={alert._id}
-                setRefresh={setRefresh}
-                setChangealert={setChangealert}
-              />
-            );
-          })}
+          {pendingAlerts.map((alert) => (
+            <AlertCard
+              key={alert._id}
+              alertype={alert.alert_type}
+              alert_id={alert._id}
+              patient_id={alert.patient_id}
+              iconClassName="fa-circle-info"
+              className="emergency-card"
+              patient_name={alert.patient_name}
+              message={alert.category}
+              time={formatDuration(new Date() - new Date(alert.createdAt))}
+              setRefresh={setRefreshAlerts}
+            />
+          ))}
         </div>
 
-        <div>
-          {alerts.filter((a) => a.status !== "pending").length > 0 && (
+        {resolvedAlerts.length > 0 && (
+          <div>
             <h2>
               Resolved alerts{" "}
-              <span className="resolved-alert-text">
-                {alerts.filter((a) => a.status !== "pending").length}
-              </span>
+              <span className="resolved-alert-text">{resolvedAlerts.length}</span>
             </h2>
-          )}
-          {alerts
-            .filter((a) => a.status !== "pending")
-            .map((alert) => {
-              // divide on based of status
-              return <ResolvedAlertCard
+            {resolvedAlerts.map((alert) => (
+              <ResolvedAlertCard
+                key={alert._id}
                 alertype={alert.alert_type}
                 alert_id={alert._id}
                 iconClassName="fa-thumbs-up"
-                className={"doses-missed-card"}
+                className="doses-missed-card"
                 patient_name={alert.patient_name}
                 message={alert.category}
                 time={formatDuration(new Date() - new Date(alert.createdAt))}
-                key={alert._id}
-                setRefresh={setRefresh}
-                setChangealert={setChangealert}
-              />;
-            })}
-        </div>
+                setRefresh={setRefreshAlerts}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
