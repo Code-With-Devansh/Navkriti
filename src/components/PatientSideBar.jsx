@@ -21,7 +21,7 @@ const PatientSideBar = ({ active }) => {
     }
     const links = [
         {
-            href: "/patient/dashboard",
+            href: "/patient/home",
             iconClass: "fa-home",
             label: "Home",
         },
