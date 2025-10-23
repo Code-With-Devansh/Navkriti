@@ -2547,3 +2547,38 @@ Tailwind utilities used in PatientRegister.jsx
     transform: translate(15%,0%) !important;
   } 
 }
+
+.appointmentIntro{
+  width: 60vw;
+}
+
+
+.book-appointment-btn {
+  color: var(--light-bg-color);
+  width: auto !important;
+  background: var(--primary-color);
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+
+}
+
+.appointmentList{
+  padding-top: 30px;
+}
+
+.appointmentListHeading{
+  font-size: 25px;
+}
+
+.appointments{
+  flex-direction: row;
+  gap: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}

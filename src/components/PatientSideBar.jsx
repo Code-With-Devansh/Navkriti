@@ -34,11 +34,6 @@ const PatientSideBar = ({ active }) => {
             href: "/patient/checkups",
             iconClass: "fa-calendar-minus",
             label: "Checkups",
-        },
-        {
-            href: "/patient/sos",
-            iconClass: "fa-clock",
-            label: "SOS",
         }
     ]
     return (
