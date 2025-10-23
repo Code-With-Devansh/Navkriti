@@ -28,7 +28,8 @@ export async function POST(req) {
         patient_name: auth.patient.name,
         patient_phone: auth.patient.phone,
         patient_age: auth.patient.age,
-
+        alert_type: body.alert_type || "high",
+        priority: body.priority || 5,
       ...body,
     });
     return NextResponse.json({success:true, alert}, { status: 201 });

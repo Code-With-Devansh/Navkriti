@@ -154,6 +154,33 @@ const DashBoardPatient = () => {
     }
   };
 
+  // Transcribe audio using local Whisper server
+  const transcribeAudio = async (audioBlob) => {
+    try {
+      // Create FormData for Whisper API
+      const formData = new FormData();
+      formData.append('file', audioBlob, 'recording.wav');
+
+      // Call your local Whisper server at localhost:8000
+      const response = await fetch('http://localhost:8000/transcribe', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Transcription failed');
+      }
+
+      const data = await response.json();
+      // Adjust based on your Whisper server's response format
+      return data.text || data.transcription || data.result;
+    } catch (error) {
+      console.error('Transcription error:', error);
+      // Return null if transcription fails - we can still send the SOS
+      return null;
+    }
+  };
+
   const handleSendRecording = async () => {
     if (!isRecording || isProcessing) return;
 
@@ -180,7 +207,7 @@ const DashBoardPatient = () => {
 
     setIsProcessing(true);
     setStatus("processing");
-    setMessage("Uploading audio...");
+    setMessage("Processing audio...");
 
     // Wait a bit for MediaRecorder to finalize
     await new Promise((resolve) => setTimeout(resolve, 100));
@@ -189,17 +216,27 @@ const DashBoardPatient = () => {
     const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
 
     try {
-      // Upload to Cloudinary first
-      setMessage("Uploading to cloud storage...");
-      const audioUrl = await uploadToCloudinary(audioBlob);
+      // Step 1: Transcribe audio (parallel with upload for speed)
+      setMessage("Transcribing audio...");
+      const transcriptionPromise = transcribeAudio(audioBlob);
 
-      // Now send the URL to your API
+      // Step 2: Upload to Cloudinary
+      setMessage("Uploading to cloud storage...");
+      const uploadPromise = uploadToCloudinary(audioBlob);
+
+      // Wait for both to complete
+      const [transcription, audioUrl] = await Promise.all([
+        transcriptionPromise,
+        uploadPromise,
+      ]);
+
+      // Step 3: Send SOS alert with both URL and transcription
       setMessage("Sending SOS alert...");
-      await sendSOSAlert(audioUrl, finalDuration);
+      await sendSOSAlert(audioUrl, finalDuration, transcription);
     } catch (error) {
-      console.error('Error in upload process:', error);
+      console.error('Error in processing:', error);
       setStatus("error");
-      setMessage("Failed to upload audio. Please try again.");
+      setMessage("Failed to process audio. Please try again.");
       
       setTimeout(() => {
         setStatus("idle");
@@ -221,7 +258,7 @@ const DashBoardPatient = () => {
     recordingStartTimeRef.current = null;
   };
 
-  const sendSOSAlert = async (audioUrl, duration) => {
+  const sendSOSAlert = async (audioUrl, duration, transcription) => {
     try {
       const patientToken = localStorage.getItem("patientToken");
 
@@ -247,11 +284,11 @@ const DashBoardPatient = () => {
         }
       }
 
-      // Create JSON payload with audio URL
+      // Create JSON payload with audio URL and transcription
       const payload = {
         sos_audio_url: audioUrl, // Cloudinary URL
         sos_duration: duration,
-
+        sos_transcription: transcription, // Transcribed text from Whisper
       };
 
       if (location) {
@@ -265,7 +302,7 @@ const DashBoardPatient = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${patientToken}`,
         },
-        body: JSON.stringify({...payload, alert_type:"high", priority:5}),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
