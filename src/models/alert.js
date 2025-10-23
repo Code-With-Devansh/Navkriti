@@ -91,5 +91,6 @@ alertSchema.index({ status: 1, alert_type: 1 });
 alertSchema.index({ patient_id: 1, createdAt: -1 });
 alertSchema.index({ createdAt: -1 });
 alertSchema.index({ category: 1, status: 1 });
+const Alert = mongoose.models.Alert || mongoose.model('Alert', alertSchema);
 
-export default mongoose.model('Alert', alertSchema);
+export default Alert;
