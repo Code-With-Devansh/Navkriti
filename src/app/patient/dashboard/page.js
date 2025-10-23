@@ -3,35 +3,43 @@ import MedicineReminder from "@/components/MedicineReminder";
 import PatientSideBar from "@/components/PatientSideBar";
 import SOSBtn from "@/components/SOSBtn";
 import React, { useState, useRef, useEffect } from "react";
-import { Mic, AlertCircle, CheckCircle, Loader } from "lucide-react";
+import { Mic, AlertCircle, CheckCircle, Loader, X, Send } from "lucide-react";
+
 const DashBoardPatient = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [status, setStatus] = useState("idle"); // idle, recording, review, processing, success, error
+  const [status, setStatus] = useState("idle"); // idle, recording, processing, success, error
   const [message, setMessage] = useState("");
   const [permissionDenied, setPermissionDenied] = useState(false);
-  const [recordedBlob, setRecordedBlob] = useState(null);
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const timerIntervalRef = useRef(null);
   const streamRef = useRef(null);
-  const buttonPressTimeRef = useRef(null);
+  const recordingStartTimeRef = useRef(null);
+
   const MAX_DURATION = 30; // 30 seconds max
-  const AUTO_SEND_THRESHOLD = 600; // Auto-send if held > 2 seconds
+
+  // Cloudinary configuration
+  const CLOUDINARY_CLOUD_NAME = "debeqjgby"; // Replace with your cloud name
+  const CLOUDINARY_UPLOAD_PRESET = "Navkriti"; // Replace with your unsigned upload preset
+
   useEffect(() => {
     // Cleanup on unmount
     return () => {
-      stopRecording();
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
+      }
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+        mediaRecorderRef.current.stop();
       }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
     };
   }, []);
+
   const startRecording = async () => {
     try {
       // Request microphone permission
@@ -61,16 +69,12 @@ const DashBoardPatient = () => {
         }
       };
 
-      // Handle recording stop
-      mediaRecorder.onstop = () => {
-        handleRecordingComplete();
-      };
-
       // Start recording
       mediaRecorder.start();
       setIsRecording(true);
       setStatus("recording");
       setRecordingDuration(0);
+      recordingStartTimeRef.current = Date.now();
 
       // Start timer
       timerIntervalRef.current = setInterval(() => {
@@ -79,7 +83,7 @@ const DashBoardPatient = () => {
 
           // Auto-stop at max duration
           if (newDuration >= MAX_DURATION) {
-            stopRecording();
+            handleSendRecording();
           }
 
           return newDuration;
@@ -104,122 +108,120 @@ const DashBoardPatient = () => {
     }
   };
 
- const stopRecording = () => {
-  if (timerIntervalRef.current) {
-    clearInterval(timerIntervalRef.current);
-    timerIntervalRef.current = null;
-  }
-
-  // Freeze duration based on actual elapsed time
-  if (buttonPressTimeRef.current) {
-    const elapsed = Math.floor((Date.now() - buttonPressTimeRef.current) / 1000);
-    setRecordingDuration(elapsed);
-  }
-
-  if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
-    mediaRecorderRef.current.stop();
-  }
-
-  if (streamRef.current) {
-    streamRef.current.getTracks().forEach((track) => track.stop());
-  }
-
-  setIsRecording(false);
-};
-
-  const stopRecordingForReview = () => {
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state !== "inactive"
-    ) {
-      // Change the onstop handler to go to review mode
-      const originalOnStop = mediaRecorderRef.current.onstop;
-      mediaRecorderRef.current.onstop = () => {
-        handleRecordingCompleteForReview();
-      };
-      mediaRecorderRef.current.stop();
-    }
-
+  const stopRecording = () => {
     if (timerIntervalRef.current) {
       clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      mediaRecorderRef.current.stop();
     }
 
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
     }
 
     setIsRecording(false);
   };
 
-  const handleRecordingCompleteForReview = () => {
-    // Create audio blob and store it
-    const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-    setRecordedBlob(audioBlob);
-    setStatus("review");
-    setMessage("Review your recording");
+  // Upload audio to Cloudinary
+  const uploadToCloudinary = async (audioBlob) => {
+    const formData = new FormData();
+    formData.append('file', audioBlob);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    formData.append('resource_type', 'video'); // Cloudinary treats audio as video
+
+    try {
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to upload to Cloudinary');
+      }
+
+      const data = await response.json();
+      return data.secure_url; // Return the secure URL
+    } catch (error) {
+      console.error('Cloudinary upload error:', error);
+      throw error;
+    }
   };
 
-  const handleRecordingComplete = async () => {
-  // Compute actual elapsed time based on timestamps
-  const elapsed = buttonPressTimeRef.current
-    ? Math.floor((Date.now() - buttonPressTimeRef.current) / 1000)
-    : recordingDuration;
-
-  if (elapsed < 2) {
-    setStatus("error");
-    setMessage("Recording too short. Please hold for at least 2 seconds.");
-    setTimeout(() => {
-      setStatus("idle");
-      setMessage("");
-      setRecordingDuration(0);
-    }, 3000);
-    return;
-  }
-
-  // Set accurate duration
-  setRecordingDuration(elapsed);
-
-  // Create audio blob
-  const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-
-  // Send to server
-  await sendSOSAlert(audioBlob);
-};
-
   const handleSendRecording = async () => {
-    if (!recordedBlob) return;
+    if (!isRecording || isProcessing) return;
 
-    // Check if recording is too short
-    if (recordingDuration < 1) {
+    // Get final duration
+    const finalDuration = recordingStartTimeRef.current
+      ? Math.floor((Date.now() - recordingStartTimeRef.current) / 1000)
+      : recordingDuration;
+
+    // Check minimum duration
+    if (finalDuration < 1) {
+      stopRecording();
       setStatus("error");
       setMessage("Recording too short. Please record for at least 1 second.");
-
       setTimeout(() => {
         setStatus("idle");
         setMessage("");
         setRecordingDuration(0);
-        setRecordedBlob(null);
       }, 3000);
-
       return;
     }
 
-    await sendSOSAlert(recordedBlob);
+    // Stop recording first
+    stopRecording();
+
+    setIsProcessing(true);
+    setStatus("processing");
+    setMessage("Uploading audio...");
+
+    // Wait a bit for MediaRecorder to finalize
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    // Create audio blob
+    const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+
+    try {
+      // Upload to Cloudinary first
+      setMessage("Uploading to cloud storage...");
+      const audioUrl = await uploadToCloudinary(audioBlob);
+
+      // Now send the URL to your API
+      setMessage("Sending SOS alert...");
+      await sendSOSAlert(audioUrl, finalDuration);
+    } catch (error) {
+      console.error('Error in upload process:', error);
+      setStatus("error");
+      setMessage("Failed to upload audio. Please try again.");
+      
+      setTimeout(() => {
+        setStatus("idle");
+        setMessage("");
+        setRecordingDuration(0);
+        audioChunksRef.current = [];
+        recordingStartTimeRef.current = null;
+      }, 5000);
+      setIsProcessing(false);
+    }
   };
 
   const handleDiscardRecording = () => {
-    setRecordedBlob(null);
+    stopRecording();
+    audioChunksRef.current = [];
     setStatus("idle");
     setMessage("");
     setRecordingDuration(0);
-    audioChunksRef.current = [];
+    recordingStartTimeRef.current = null;
   };
 
-  const sendSOSAlert = async (audioBlob) => {
-    setIsProcessing(true);
-    setStatus("processing");
-    setMessage("Sending SOS alert...");
-
+  const sendSOSAlert = async (audioUrl, duration) => {
     try {
       const patientToken = localStorage.getItem("patientToken");
 
@@ -245,21 +247,25 @@ const DashBoardPatient = () => {
         }
       }
 
-      // Create FormData
-      const formData = new FormData();
-      formData.append("audio", audioBlob, "sos-recording.webm");
-      formData.append("duration", recordingDuration);
+      // Create JSON payload with audio URL
+      const payload = {
+        sos_audio_url: audioUrl, // Cloudinary URL
+        sos_duration: duration,
+
+      };
+
       if (location) {
-        formData.append("location", JSON.stringify(location));
+        payload.sos_location = location;
       }
 
-      // Upload and create alert
-      const response = await fetch("/api/sos/create-alert", {
+      // Send to your API
+      const response = await fetch("/api/alerts/sos/create-alert", {
         method: "POST",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${patientToken}`,
         },
-        body: formData,
+        body: JSON.stringify({...payload, alert_type:"high", priority:5}),
       });
 
       const data = await response.json();
@@ -273,6 +279,8 @@ const DashBoardPatient = () => {
           setStatus("idle");
           setMessage("");
           setRecordingDuration(0);
+          audioChunksRef.current = [];
+          recordingStartTimeRef.current = null;
         }, 5000);
       } else {
         throw new Error(data.error || "Failed to send alert");
@@ -286,63 +294,45 @@ const DashBoardPatient = () => {
       setTimeout(() => {
         setStatus("idle");
         setMessage("");
+        setRecordingDuration(0);
+        audioChunksRef.current = [];
+        recordingStartTimeRef.current = null;
       }, 5000);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleMouseDown = () => {
+  const handleButtonPress = () => {
     if (status === "idle" && !isRecording && !isProcessing) {
-      buttonPressTimeRef.current = Date.now();
       startRecording();
     }
-  };
-
-  const handleMouseUp = () => {
-    if (isRecording) {
-      const holdDuration = Date.now() - (buttonPressTimeRef.current || 0);
-
-      // If held for more than 2 seconds, auto-send
-      if (holdDuration >= AUTO_SEND_THRESHOLD) {
-        stopRecording();
-      } else {
-        // Short press - stop recording but show review options
-        stopRecordingForReview();
-      }
-    }
-  };
-
-  const handleTouchStart = (e) => {
-    e.preventDefault();
-    handleMouseDown();
-  };
-
-  const handleTouchEnd = (e) => {
-    e.preventDefault();
-    handleMouseUp();
   };
 
   const formatDuration = (seconds) => {
     return `0:${seconds.toString().padStart(2, "0")}`;
   };
+
   return (
     <>
       <PatientSideBar active={"home"} />
       <div className="container" style={{ marginBottom: "150px" }}>
         <h1>Welcome back, Devesh!</h1>
         <p className="txt-light">How are you feeling today?</p>
+        
         <div className="sos-btn-container">
-          {}
           <SOSBtn
             className={`sos-button ${status}`}
-            handleMouseDown={handleMouseDown}
-            handleMouseUp={handleMouseUp}
-            handleTouchStart={handleTouchStart}
-            handleTouchEnd={handleTouchEnd}
-            disabled={
-              isProcessing || status === "success" || status === "review"
-            }
+            handleMouseDown={handleButtonPress}
+            handleMouseUp={() => {}} // No action on mouse up
+            handleTouchStart={(e) => {
+              e.preventDefault();
+              handleButtonPress();
+            }}
+            handleTouchEnd={(e) => {
+              e.preventDefault();
+            }}
+            disabled={isProcessing || status === "success"}
             message={
               <>
                 {status === "idle" && (
@@ -378,14 +368,6 @@ const DashBoardPatient = () => {
                     <div className="sos-text-small">Error</div>
                   </>
                 )}
-                {status === "review" && (
-                  <>
-                    <div className="sos-icon">🎙️</div>
-                    <div className="sos-text-small">
-                      {formatDuration(recordingDuration)}
-                    </div>
-                  </>
-                )}
               </>
             }
           />
@@ -393,68 +375,59 @@ const DashBoardPatient = () => {
           {/* Recording indicator ring */}
           {status === "recording" && <div className="recording-ring"></div>}
         </div>
+
+        {/* Action Buttons - Show during recording */}
+        {status === "recording" && (
+          <div className="flex gap-4 justify-center mt-6">
+            <button
+              onClick={handleSendRecording}
+              disabled={isProcessing || recordingDuration < 1}
+              className="px-8 py-4 bg-green-600 text-white rounded-xl hover:bg-green-700 font-bold text-lg flex items-center gap-3 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            >
+              <Send className="w-6 h-6" />
+              Send SOS
+            </button>
+            <button
+              onClick={handleDiscardRecording}
+              disabled={isProcessing}
+              className="px-8 py-4 bg-gray-600 text-white rounded-xl hover:bg-gray-700 font-bold text-lg flex items-center gap-3 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            >
+              <X className="w-6 h-6" />
+              Cancel
+            </button>
+          </div>
+        )}
+
         {/* Instructions */}
-        <div className="text-center max-w-md">
+        <div className="text-center max-w-md mt-6">
           {status === "idle" && !permissionDenied && (
             <div className="space-y-2">
               <p className="text-gray-600 text-sm font-semibold">
-                Press and hold to record emergency message
+                Tap the SOS button to start recording emergency message
               </p>
               <p className="text-gray-500 text-xs">
-                Hold for 2+ seconds to auto-send, or release early to review
+                Maximum recording duration: {MAX_DURATION} seconds
               </p>
             </div>
           )}
 
           {status === "recording" && (
-            <div className="space-y-1">
+            <div className="space-y-2 mt-4">
               <p className="text-red-600 font-semibold animate-pulse text-lg">
-                🔴 Recording...
+                🔴 Recording in progress...
               </p>
               <p className="text-gray-600 text-sm">
-                Hold for 2s to auto-send • Max {MAX_DURATION}s
+                Speak your emergency message • Max {MAX_DURATION}s
               </p>
-            </div>
-          )}
-
-          {status === "review" && (
-            <div className="space-y-4">
-              <p className="text-blue-600 font-semibold text-lg">
-                Recording Complete
-              </p>
-              <p className="text-gray-600 text-sm">
-                Duration: {formatDuration(recordingDuration)}
-              </p>
-
-              {/* Send and Discard Buttons */}
-              <div className="flex gap-3 justify-center">
-                <button
-                  onClick={handleSendRecording}
-                  disabled={isProcessing}
-                  className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold flex items-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <CheckCircle className="w-5 h-5" />
-                  Send SOS
-                </button>
-                <button
-                  onClick={handleDiscardRecording}
-                  disabled={isProcessing}
-                  className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 font-semibold flex items-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <AlertCircle className="w-5 h-5" />
-                  Discard
-                </button>
-              </div>
-
               <p className="text-gray-500 text-xs">
-                Review your recording before sending
+                Click "Send SOS" when done or "Cancel" to discard
               </p>
             </div>
           )}
 
           {message && (
             <div
-              className={`mt-2 p-3 rounded-lg ${
+              className={`mt-4 p-3 rounded-lg ${
                 status === "success"
                   ? "bg-green-100 text-green-800"
                   : status === "error"
@@ -484,6 +457,7 @@ const DashBoardPatient = () => {
             </div>
           )}
         </div>
+
         {/* Alternative contact option */}
         {(status === "error" || permissionDenied) && (
           <div className="mt-4 p-4 bg-gray-100 rounded-lg">
