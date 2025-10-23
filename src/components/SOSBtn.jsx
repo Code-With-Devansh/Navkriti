@@ -1,10 +1,16 @@
 import React from 'react'
 
-const SOSBtn = () => {
+const SOSBtn = ({handleMouseDown, handleMouseUp, handleTouchStart, handleTouchEnd,handleClick, disabled, message}) => {
   return (
-    <button className='sos-btn'>
-          <i className="fa-solid fa-circle-exclamation"></i>
-        <h1>SOS</h1>
+    <button className='sos-btn' onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onClick={handleClick}
+            disabled={disabled}>
+         
+        <h1>{message}</h1>
     </button>
   )
 }
