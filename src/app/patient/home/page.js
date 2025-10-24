@@ -31,7 +31,10 @@ const DashBoardPatient = () => {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state !== "inactive"
+      ) {
         mediaRecorderRef.current.stop();
       }
       if (streamRef.current) {
@@ -114,7 +117,10 @@ const DashBoardPatient = () => {
       timerIntervalRef.current = null;
     }
 
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
       mediaRecorderRef.current.stop();
     }
 
@@ -129,27 +135,27 @@ const DashBoardPatient = () => {
   // Upload audio to Cloudinary
   const uploadToCloudinary = async (audioBlob) => {
     const formData = new FormData();
-    formData.append('file', audioBlob);
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('resource_type', 'video'); // Cloudinary treats audio as video
+    formData.append("file", audioBlob);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+    formData.append("resource_type", "video"); // Cloudinary treats audio as video
 
     try {
       const response = await fetch(
         `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`,
         {
-          method: 'POST',
+          method: "POST",
           body: formData,
         }
       );
 
       if (!response.ok) {
-        throw new Error('Failed to upload to Cloudinary');
+        throw new Error("Failed to upload to Cloudinary");
       }
 
       const data = await response.json();
       return data.secure_url; // Return the secure URL
     } catch (error) {
-      console.error('Cloudinary upload error:', error);
+      console.error("Cloudinary upload error:", error);
       throw error;
     }
   };
@@ -159,23 +165,23 @@ const DashBoardPatient = () => {
     try {
       // Create FormData for Whisper API
       const formData = new FormData();
-      formData.append('file', audioBlob, 'recording.wav');
+      formData.append("file", audioBlob, "recording.wav");
 
       // Call your local Whisper server at localhost:8000
-      const response = await fetch('http://localhost:8000/transcribe', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/transcribe", {
+        method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Transcription failed');
+        throw new Error("Transcription failed");
       }
 
       const data = await response.json();
       // Adjust based on your Whisper server's response format
       return data.text || data.transcription || data.result;
     } catch (error) {
-      console.error('Transcription error:', error);
+      console.error("Transcription error:", error);
       // Return null if transcription fails - we can still send the SOS
       return null;
     }
@@ -234,10 +240,10 @@ const DashBoardPatient = () => {
       setMessage("Sending SOS alert...");
       await sendSOSAlert(audioUrl, finalDuration, transcription);
     } catch (error) {
-      console.error('Error in processing:', error);
+      console.error("Error in processing:", error);
       setStatus("error");
       setMessage("Failed to process audio. Please try again.");
-      
+
       setTimeout(() => {
         setStatus("idle");
         setMessage("");
@@ -356,7 +362,7 @@ const DashBoardPatient = () => {
       <div className="container" style={{ marginBottom: "150px" }}>
         <h1>Welcome back, Devesh!</h1>
         <p className="txt-light">How are you feeling today?</p>
-        
+
         <div className="sos-btn-container">
           <SOSBtn
             className={`sos-button ${status}`}
@@ -457,7 +463,8 @@ const DashBoardPatient = () => {
                 Speak your emergency message • Max {MAX_DURATION}s
               </p>
               <p className="text-gray-500 text-xs">
-                Click "Send SOS" when done or "Cancel" to discard
+                Click &quot;Send SOS&quot; when done or &quot;Cancel&quot; to
+                discard
               </p>
             </div>
           )}
