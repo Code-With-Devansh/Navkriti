@@ -60,8 +60,8 @@ const LoginFormPatient = () => {
         // Store user data (optional)
         localStorage.setItem("patientData", JSON.stringify(data.user));
 
-        // Redirect to dashboard
-        router.push("/patient/dashboard");
+        // Redirect to home
+        router.push("/patient/home");
       } else {
         setError(data.error || "Login failed. Please try again.");
       }

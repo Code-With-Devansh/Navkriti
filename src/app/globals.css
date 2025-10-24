@@ -92,7 +92,7 @@ main {
   transition: transform 0.3s ease;
 }
 
-.logo:hover{
+.logo:hover {
   transform: scale(1.05);
 }
 
@@ -116,7 +116,7 @@ li {
   transition: transform 0.4s ease;
 }
 
-li:hover{
+li:hover {
   transform: scale(1.3);
 }
 
@@ -137,7 +137,7 @@ li:hover{
   transition: transform 0.5s ease;
 }
 
-.card:hover{
+.card:hover {
   transform: scale(1.1);
 }
 
@@ -2313,7 +2313,7 @@ Tailwind utilities used in PatientRegister.jsx
   width: 60vw !important;
   position: relative !important;
   left: 50% !important;
-  transform: translate(-30%,-10%) !important;
+  transform: translate(-30%, -10%) !important;
 }
 
 .sos-btn {
@@ -2329,6 +2329,13 @@ Tailwind utilities used in PatientRegister.jsx
   align-items: center;
   justify-content: center;
   animation: sosBlink 1.5s infinite;
+  transition: transform 1s ease-in-out;
+
+}
+
+.sos-btn:hover {
+  cursor: pointer;
+  transform: scale(1.05);
 }
 
 .sos-btn-container {
@@ -2349,39 +2356,43 @@ Tailwind utilities used in PatientRegister.jsx
   }
   50% {
     box-shadow: 0 0 20px red;
-    transform : scale(1.05)
+    transform: scale(1.05);
   }
   100% {
     box-shadow: 0 0 5px red;
   }
 }
 
-
-.menu{
+.menu {
   display: none;
 }
 
-
 /* making responsive */
-
 
 /* / screen */
 @media screen and (max-width: 1070px) {
-  
-  .card-container{
+  .card-container {
     flex-direction: column;
-
   }
-  .card{
+  .card {
     margin-bottom: 50px;
     width: 80vw;
   }
 }
 
-
 /* /patient/login screen */
 @media screen and (max-width: 890px) {
-  .patient-login, .form-container{
+  header {
+    height: 100px;
+  }
+  .logo div i {
+    font-size: 20px;
+  }
+  .logo div h1 {
+    font-size: 28px;
+  }
+  .patient-login,
+  .form-container {
     flex-direction: column;
     width: 90vw;
     margin: auto;
@@ -2393,11 +2404,12 @@ Tailwind utilities used in PatientRegister.jsx
     transform: translateY(-15%);
   }
 
-  .sidebar{
+  .sidebar {
     width: 250px;
   }
 
-  .patient-login .right, .form-container .right{
+  .patient-login .right,
+  .form-container .right {
     width: 100% !important;
     margin: auto !important;
     display: flex;
@@ -2408,23 +2420,22 @@ Tailwind utilities used in PatientRegister.jsx
     transform: translateX(-8%);
   }
 
-  .patient-card .right h2{
+  .patient-card .right h2 {
     font-size: 20px;
     text-align: left;
   }
 
-  .patient-register-wrapper{
+  .patient-register-wrapper {
     transform: translateX(8%);
   }
 }
 
-
 @media screen and (max-width: 830px) {
-  .form-container{
+  .form-container {
     flex-direction: column;
   }
 
-  .form-container .right{
+  .form-container .right {
     width: 80% !important;
     margin: auto !important;
     display: flex;
@@ -2436,13 +2447,30 @@ Tailwind utilities used in PatientRegister.jsx
 
 /* dashboard */
 @media screen and (max-width: 1380px) {
-  .dashboard-container{
+  .dashboard-container {
     flex-direction: column;
     position: static;
   }
 
+  .visual-section{
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .visual-section h2{
+    font-size: 20px;
+  }
+
+  .dashboard-container h2{
+    font-size: 30px;
+  }
+
+  .dashboard-card{
+    width: 100%;
+  }
+
   .dashboard-container .left,
-  .dashboard-container .right{
+  .dashboard-container .right {
     width: 90% !important;
     margin: auto !important;
     display: flex;
@@ -2451,8 +2479,7 @@ Tailwind utilities used in PatientRegister.jsx
     transform: translateX(0%);
   }
 
-
-  nav{
+  nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -2464,18 +2491,18 @@ Tailwind utilities used in PatientRegister.jsx
     z-index: 100;
   }
 
-  .sidebar{
+  .sidebar {
     width: 0px;
     transition: width 0.3s ease-in-out;
   }
 
-  .sidebar a{
+  .sidebar a {
     display: none;
   }
 
-  .menu{
+  .menu {
     display: block;
-    width: 50px;
+    width: 30px;
     height: 50px;
     display: flex;
     flex-direction: column;
@@ -2484,25 +2511,25 @@ Tailwind utilities used in PatientRegister.jsx
     margin: 10px;
     border: none;
     background: transparent;
-    position: absolute;
-    top: 25px;
+    position: fixed;
+    top: 20px;
     right: 100px;
     cursor: pointer;
     z-index: 10000;
   }
-  
-  .menu div{
+
+  .menu div {
     background: black;
     display: block;
-    width: 50px;
-    height: 10px;
+    width: 30px;
+    height: 5px;
   }
 
-  .patient-register-container{
+  .patient-register-container {
     transform: translate(-5%);
   }
 
-  .container{
+  .container {
     width: 90% !important;
     position: static;
     margin: auto !important;
@@ -2512,46 +2539,74 @@ Tailwind utilities used in PatientRegister.jsx
     width: 90vw !important;
     position: static !important;
     left: 50% !important;
-    transform: translate(-8%,0%) !important;
+    transform: translate(-8%, 0%) !important;
   }
+}
 
+.logo a{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sendSOSbtn, .cancelSOSbtn {
+  border: none;
+  padding: 10px 20px;
+  margin: 15px;
+}
+
+.sendSOSbtn:hover, .cancelSOSbtn:hover {
+  cursor: pointer;
+  opacity: 0.8;
 }
 
 
 @media screen and (max-width: 730px) {
-  .alert-card h3{
+  .alert-card h3 {
     font-size: 18px;
   }
 
-  .alert-card{
+  .alert-card {
     flex-direction: column;
     gap: 5px;
   }
-  .alert-card i{
+  .alert-card i {
     font-size: 18px;
   }
 
-  .alert-card p{
+  .alert-card p {
     font-size: 10px;
   }
 
-  .alert-card button{
+  .alert-card button {
     padding: 5px 10px;
     font-size: 10px;
   }
 }
 
+@media screen and (max-width: 900px) {
+  .patient-register-wrapper {
+    transform: translate(15%, 0%) !important;
+  }
 
-@media screen and (max-width : 900px) {
-  .patient-register-wrapper{
-    transform: translate(15%,0%) !important;
-  } 
+  .form-container .right {
+    z-index: -1;
+  }
+  .form-container .right {
+    transform: translate(-10%, -40%);
+    z-index: 1000;
+  }
 }
 
-.appointmentIntro{
+@media screen and (max-width: 400px) {
+  .patient-login .right {
+    transform: translate(-10%, -35%);
+  }
+}
+
+.appointmentIntro {
   width: 60vw;
 }
-
 
 .book-appointment-btn {
   color: var(--light-bg-color);
@@ -2563,22 +2618,140 @@ Tailwind utilities used in PatientRegister.jsx
   position: absolute;
   top: 5px;
   right: 5px;
-
 }
 
-.appointmentList{
+.appointmentList {
   padding-top: 30px;
 }
 
-.appointmentListHeading{
+.appointmentListHeading {
   font-size: 25px;
 }
 
-.appointments{
+.appointments {
   flex-direction: row;
   gap: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.appointment-card {
+  transition: transform 0.3s ease;
+}
+.appointment-card:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.logo:hover {
+  cursor: pointer;
+}
+
+img {
+  transition: transform 0.3s ease;
+}
+img:hover {
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+
+.instructions{
+  min-width: 60vw;
+  margin: 40px auto;
+}
+
+a:hover, button:hover {
+  cursor: pointer;
+}
+
+.patientBasics{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.patientBasics > div{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.patientBasics h3{
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.patientBasics button{
+  border: none;
+  padding: 15px 25px;
+  margin: 15px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 6px;
+}
+
+
+.activityCards{
+  margin-bottom: 20px;
+
+}
+
+.recentActivity, .medicineIntake{
+  margin: 40px auto;
+  min-width: 60vw;
+}
+
+.recentActivity h2, .medicineIntake h2{
+  font-size: 30px;
+  margin-bottom: 20px;
+
+}
+
+.activityCard, .medicineCard{
+  width: 300px;
+  background: var(--light-bg-color);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.activityCard p,.medicineCard p{
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.activityCard h3, medicineCard h3{
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.activityCard:hover , .medicineCard:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.activityCards, .medicalScheduleCards{
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.high-risk-card{
+  border: 1px solid var(--secondary-color);
+  background: #ffe5e5;
+}
+
+.medium-risk-card{
+  border: 1px solid orange;
+  background: #fff3cd;
+}
+
+.low-risk-card{
+  border: 1px solid green;
+  background: #d4edda;
 }

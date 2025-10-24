@@ -4,7 +4,6 @@ import PatientSideBar from "@/components/PatientSideBar";
 import SOSBtn from "@/components/SOSBtn";
 import React, { useState, useRef, useEffect } from "react";
 import { Mic, AlertCircle, CheckCircle, Loader, X, Send } from "lucide-react";
-
 const DashBoardPatient = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
@@ -425,7 +424,7 @@ const DashBoardPatient = () => {
             <button
               onClick={handleSendRecording}
               disabled={isProcessing || recordingDuration < 1}
-              className="px-8 py-4 bg-green-600 text-white rounded-xl hover:bg-green-700 font-bold text-lg flex items-center gap-3 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+              className="px-8 py-4 bg-green-600 text-white rounded-xl hover:bg-green-700 font-bold text-lg flex items-center gap-3 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg sendSOSbtn"
             >
               <Send className="w-6 h-6" />
               Send SOS
@@ -433,7 +432,7 @@ const DashBoardPatient = () => {
             <button
               onClick={handleDiscardRecording}
               disabled={isProcessing}
-              className="px-8 py-4 bg-gray-600 text-white rounded-xl hover:bg-gray-700 font-bold text-lg flex items-center gap-3 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+              className="px-8 py-4 bg-gray-600 text-white rounded-xl hover:bg-gray-700 font-bold text-lg flex items-center gap-3 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg cancelSOSbtn"
             >
               <X className="w-6 h-6" />
               Cancel
@@ -442,7 +441,7 @@ const DashBoardPatient = () => {
         )}
 
         {/* Instructions */}
-        <div className="text-center max-w-md mt-6">
+        <div className="text-center max-w-md mt-6 instructions">
           {status === "idle" && !permissionDenied && (
             <div className="space-y-2">
               <p className="text-gray-600 text-sm font-semibold">
