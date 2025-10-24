@@ -117,7 +117,9 @@ const DashBoardHospital = () => {
   useEffect(() => {
     if (!chartRef.current) return;
     if (chartInstanceRef.current) chartInstanceRef.current.destroy();
-
+if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
     chartInstanceRef.current = new Chart(chartRef.current, {
       type: "line",
       data: {
