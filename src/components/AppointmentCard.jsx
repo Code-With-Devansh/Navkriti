@@ -7,7 +7,7 @@ const AppointmentCard = ({patient}) => {
         <i className='fa-regular fa-user'></i>
         <div>
           <h3>{patient.name}</h3>
-          <p className='text-light'>Follow-up</p>
+          <p className='text-light'>{patient.date}</p>
         </div>
       </div>
       <div className='detailsPara'>

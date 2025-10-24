@@ -1,8 +1,35 @@
+"use client";
 import AppointmentCard from "@/components/AppointmentCard";
 import PatientSideBar from "@/components/PatientSideBar";
-import React from "react";
-
+import React, {useState, useEffect} from "react";
 const CheckUps = () => {
+  const [patient, setPatient] = useState({
+    name: "",
+    med_history: [],
+  });
+  useEffect(() => {
+    async function fetchPatientData() {
+      try{
+        const token = localStorage.getItem("patientToken");
+        let data = await fetch ("/api/patients/me", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+          },
+        });
+        const res = await data.json();  
+        console.log(res)
+        if(res.success){
+          setPatient(res.data);
+        } 
+      }catch(err){
+        console.error("Error authenticating patient:", err);
+      }
+    }
+fetchPatientData();
+  }, [])
+  
   return (
     <div>
       <PatientSideBar active={"checkups"} />
@@ -21,31 +48,22 @@ const CheckUps = () => {
         <div className="appointmentList">
           <h3 className="appointmentListHeading">Upcoming Appointments</h3>
           <div className="appointments">
-
-          <AppointmentCard
+        {patient.med_history.filter((val)=>{
+          return (new Date(val.followup)>=new Date())})
+        .map((e)=>{
+          return <AppointmentCard key={e.followup}
             patient={{
-              name: "Devesh",
-              med_history: [{ problem: "Dispression", doctor_name : "Devesh", dept: "Psychology" }],
+              name: patient.name,
+              date: (new Date(e.followup).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })),
+              med_history: [{ problem: e.problem, doctor_name : e.doctor_name, dept: e.dept }],
             }}
           />
-          <AppointmentCard
-            patient={{
-              name: "Devesh",
-              med_history: [{ problem: "Dispression", doctor_name : "Devesh", dept: "Psychology" }],
-            }}
-          />
-          <AppointmentCard
-            patient={{
-              name: "Devesh",
-              med_history: [{ problem: "Dispression", doctor_name : "Devesh", dept: "Psychology" }],
-            }}
-          />
-          <AppointmentCard
-            patient={{
-              name: "Devesh",
-              med_history: [{ problem: "Dispression", doctor_name : "Devesh", dept: "Psychology" }],
-            }}
-          />
+        })}
+          
           </div>
         </div>
       </div>
