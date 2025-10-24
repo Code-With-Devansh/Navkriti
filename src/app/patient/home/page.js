@@ -9,7 +9,7 @@ const DashBoardPatient = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [status, setStatus] = useState("idle"); // idle, recording, processing, success, error
+  const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
   const [permissionDenied, setPermissionDenied] = useState(false);
 
@@ -19,14 +19,13 @@ const DashBoardPatient = () => {
   const streamRef = useRef(null);
   const recordingStartTimeRef = useRef(null);
 
-  const MAX_DURATION = 30; // 30 seconds max
+  const MAX_DURATION = 30;
 
   // Cloudinary configuration
-  const CLOUDINARY_CLOUD_NAME = "debeqjgby"; // Replace with your cloud name
-  const CLOUDINARY_UPLOAD_PRESET = "Navkriti"; // Replace with your unsigned upload preset
+  const CLOUDINARY_CLOUD_NAME = "debeqjgby";
+  const CLOUDINARY_UPLOAD_PRESET = "Navkriti";
 
   useEffect(() => {
-    // Cleanup on unmount
     return () => {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
@@ -45,7 +44,6 @@ const DashBoardPatient = () => {
 
   const startRecording = async () => {
     try {
-      // Request microphone permission
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
@@ -57,7 +55,6 @@ const DashBoardPatient = () => {
       streamRef.current = stream;
       setPermissionDenied(false);
 
-      // Create MediaRecorder
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: "audio/webm;codecs=opus",
       });
@@ -65,26 +62,22 @@ const DashBoardPatient = () => {
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
-      // Collect audio data
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
         }
       };
 
-      // Start recording
       mediaRecorder.start();
       setIsRecording(true);
       setStatus("recording");
       setRecordingDuration(0);
       recordingStartTimeRef.current = Date.now();
 
-      // Start timer
       timerIntervalRef.current = setInterval(() => {
         setRecordingDuration((prev) => {
           const newDuration = prev + 1;
 
-          // Auto-stop at max duration
           if (newDuration >= MAX_DURATION) {
             handleSendRecording();
           }
@@ -132,12 +125,11 @@ const DashBoardPatient = () => {
     setIsRecording(false);
   };
 
-  // Upload audio to Cloudinary
   const uploadToCloudinary = async (audioBlob) => {
     const formData = new FormData();
     formData.append("file", audioBlob);
     formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-    formData.append("resource_type", "video"); // Cloudinary treats audio as video
+    formData.append("resource_type", "video");
 
     try {
       const response = await fetch(
@@ -153,24 +145,25 @@ const DashBoardPatient = () => {
       }
 
       const data = await response.json();
-      return data.secure_url; // Return the secure URL
+      return data.secure_url;
     } catch (error) {
       console.error("Cloudinary upload error:", error);
       throw error;
     }
   };
 
-  // Transcribe audio using local Whisper server
-  const transcribeAudio = async (audioBlob) => {
+  // UPDATED: Transcribe audio using URL instead of blob
+  const transcribeAudio = async (audioUrl) => {
     try {
-      // Create FormData for Whisper API
-      const formData = new FormData();
-      formData.append("file", audioBlob, "recording.wav");
-
-      // Call your local Whisper server at localhost:8000
+      // Send JSON with audio URL instead of FormData with blob
       const response = await fetch("http://localhost:8000/transcribe", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: audioUrl, // Send Cloudinary URL
+        }),
       });
 
       if (!response.ok) {
@@ -178,11 +171,9 @@ const DashBoardPatient = () => {
       }
 
       const data = await response.json();
-      // Adjust based on your Whisper server's response format
       return data.text || data.transcription || data.result;
     } catch (error) {
       console.error("Transcription error:", error);
-      // Return null if transcription fails - we can still send the SOS
       return null;
     }
   };
@@ -190,12 +181,10 @@ const DashBoardPatient = () => {
   const handleSendRecording = async () => {
     if (!isRecording || isProcessing) return;
 
-    // Get final duration
     const finalDuration = recordingStartTimeRef.current
       ? Math.floor((Date.now() - recordingStartTimeRef.current) / 1000)
       : recordingDuration;
 
-    // Check minimum duration
     if (finalDuration < 1) {
       stopRecording();
       setStatus("error");
@@ -208,35 +197,26 @@ const DashBoardPatient = () => {
       return;
     }
 
-    // Stop recording first
     stopRecording();
 
     setIsProcessing(true);
     setStatus("processing");
     setMessage("Processing audio...");
 
-    // Wait a bit for MediaRecorder to finalize
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // Create audio blob
     const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
 
     try {
-      // Step 1: Transcribe audio (parallel with upload for speed)
-      setMessage("Transcribing audio...");
-      const transcriptionPromise = transcribeAudio(audioBlob);
-
-      // Step 2: Upload to Cloudinary
+      // Step 1: Upload to Cloudinary first
       setMessage("Uploading to cloud storage...");
-      const uploadPromise = uploadToCloudinary(audioBlob);
+      const audioUrl = await uploadToCloudinary(audioBlob);
 
-      // Wait for both to complete
-      const [transcription, audioUrl] = await Promise.all([
-        transcriptionPromise,
-        uploadPromise,
-      ]);
+      // Step 2: Transcribe using the Cloudinary URL
+      setMessage("Transcribing audio...");
+      const transcription = await transcribeAudio(audioUrl);
 
-      // Step 3: Send SOS alert with both URL and transcription
+      // Step 3: Send SOS alert with URL and transcription
       setMessage("Sending SOS alert...");
       await sendSOSAlert(audioUrl, finalDuration, transcription);
     } catch (error) {
@@ -272,7 +252,6 @@ const DashBoardPatient = () => {
         throw new Error("Not authenticated");
       }
 
-      // Get location if available
       let location = null;
       if (navigator.geolocation) {
         try {
@@ -290,18 +269,16 @@ const DashBoardPatient = () => {
         }
       }
 
-      // Create JSON payload with audio URL and transcription
       const payload = {
-        sos_audio_url: audioUrl, // Cloudinary URL
-        sos_duration: duration,
-        sos_transcription: transcription, // Transcribed text from Whisper
+        audio_url: audioUrl,
+        duration: duration,
+        transcription: transcription,
       };
 
       if (location) {
-        payload.sos_location = location;
+        payload.location = location;
       }
 
-      // Send to your API
       const response = await fetch("/api/alerts/sos/create-alert", {
         method: "POST",
         headers: {
@@ -317,7 +294,6 @@ const DashBoardPatient = () => {
         setStatus("success");
         setMessage("SOS alert sent! Help is on the way.");
 
-        // Reset after 5 seconds
         setTimeout(() => {
           setStatus("idle");
           setMessage("");
@@ -333,7 +309,6 @@ const DashBoardPatient = () => {
       setStatus("error");
       setMessage(error.message || "Failed to send alert. Please try again.");
 
-      // Reset after 5 seconds
       setTimeout(() => {
         setStatus("idle");
         setMessage("");
@@ -367,7 +342,7 @@ const DashBoardPatient = () => {
           <SOSBtn
             className={`sos-button ${status}`}
             handleMouseDown={handleButtonPress}
-            handleMouseUp={() => {}} // No action on mouse up
+            handleMouseUp={() => {}}
             handleTouchStart={(e) => {
               e.preventDefault();
               handleButtonPress();
@@ -415,11 +390,9 @@ const DashBoardPatient = () => {
             }
           />
 
-          {/* Recording indicator ring */}
           {status === "recording" && <div className="recording-ring"></div>}
         </div>
 
-        {/* Action Buttons - Show during recording */}
         {status === "recording" && (
           <div className="flex gap-4 justify-center mt-6">
             <button
@@ -441,7 +414,6 @@ const DashBoardPatient = () => {
           </div>
         )}
 
-        {/* Instructions */}
         <div className="text-center max-w-md mt-6">
           {status === "idle" && !permissionDenied && (
             <div className="space-y-2">
@@ -502,7 +474,6 @@ const DashBoardPatient = () => {
           )}
         </div>
 
-        {/* Alternative contact option */}
         {(status === "error" || permissionDenied) && (
           <div className="mt-4 p-4 bg-gray-100 rounded-lg">
             <p className="text-sm text-gray-700 mb-2">

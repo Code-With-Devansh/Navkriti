@@ -1,10 +1,11 @@
-import AdminAlertListener from '@/components/AdminAlertListener';
+// app/admin/layout.js
+import AdminPusherListener from '@/components/AdminPusherListener';
 
 export default function AdminLayout({ children }) {
   return (
-    <>
-      <AdminAlertListener />
+    <div>
+      <AdminPusherListener />
       {children}
-    </>
+    </div>
   );
 }

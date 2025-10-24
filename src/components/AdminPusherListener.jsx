@@ -1,0 +1,91 @@
+// components/AdminPusherListener.jsx
+'use client';
+
+import { useEffect, useState } from 'react';
+import { usePusher } from '@/contexts/PusherContext';
+import { Wifi, WifiOff } from 'lucide-react';
+import CustomNotification from './CustomNotification';
+
+export default function AdminPusherListener() {
+  const { pusher, isConnected } = usePusher();
+  const [latestAlert, setLatestAlert] = useState(null);
+  const [showNotification, setShowNotification] = useState(false);
+
+  useEffect(() => {
+    if (!pusher) return;
+
+    const channel = pusher.subscribe('admin-alerts');
+
+    channel.bind('pusher:subscription_succeeded', () => {
+      console.log('✅ Subscribed to admin-alerts');
+    });
+
+    channel.bind('new-alert', (data) => {
+      console.log('🚨 New alert received:', data.alert_id);
+      
+      setLatestAlert(data);
+      setShowNotification(true);
+
+      if (window.updateAlertList?.addAlert) {
+        window.updateAlertList.addAlert(data);
+      }
+
+      setTimeout(() => setShowNotification(false), 15000);
+    });
+
+    channel.bind('alert-update', (data) => {
+      if (window.updateAlertList?.updateAlert) {
+        window.updateAlertList.updateAlert(data);
+      }
+    });
+
+    channel.bind('alert-dismiss', (data) => {
+      if (latestAlert && latestAlert._id === data.alertId) {
+        setShowNotification(false);
+      }
+      
+      if (window.updateAlertList?.removeAlert) {
+        window.updateAlertList.removeAlert(data.alertId);
+      }
+    });
+
+    return () => {
+      channel.unbind_all();
+      pusher.unsubscribe('admin-alerts');
+    };
+  }, [pusher, latestAlert]);
+
+  const handleViewDetails = () => {
+    if (latestAlert) {
+      window.location.href = `/admin/alerts/${latestAlert._id}`;
+    }
+  };
+
+  return (
+    <>
+      {/* Connection Status Indicator */}
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-white px-3 py-2 rounded-lg shadow-lg border">
+        {isConnected ? (
+          <>
+            <Wifi className="w-4 h-4 text-green-500" />
+            <span className="text-sm text-green-600 font-semibold">Live</span>
+          </>
+        ) : (
+          <>
+            <WifiOff className="w-4 h-4 text-red-500 animate-pulse" />
+            <span className="text-sm text-red-600">Connecting...</span>
+          </>
+        )}
+      </div>
+
+      {/* Custom Notification Popup */}
+      {showNotification && latestAlert && (
+        <CustomNotification
+          alert={latestAlert}
+          onClose={() => setShowNotification(false)}
+          onViewDetails={handleViewDetails}
+        />
+      )}
+    </>
+  );
+}

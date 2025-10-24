@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { PusherProvider } from '@/contexts/PusherContext';
 import { PatientProvider } from "@/store/patientStore"; // import your context
 import "./globals.css";
 
@@ -15,9 +15,11 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <PatientProvider> {/* Wrap everything in the provider */}
+          <PusherProvider>
           <Header />
           <main>{children}</main>
           {/* <Footer /> */}
+          </PusherProvider>
         </PatientProvider>
       </body>
     </html>

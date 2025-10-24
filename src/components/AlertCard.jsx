@@ -39,6 +39,26 @@ const AlertCard = ({
         }, 5000);
       });
   };
+  // components/AlertCard.jsx
+// Add this helper function at the top of the component
+
+const formatLocation = (location) => {
+  if (!location) return 'Location not available';
+  
+  if (typeof location === 'object' && location.latitude && location.longitude) {
+    return `${location.latitude.toFixed(4)}°, ${location.longitude.toFixed(4)}°`;
+  }
+  
+  if (typeof location === 'string') {
+    return location;
+  }
+  
+  return 'Location not available';
+};
+
+// Then in your JSX, use:
+
+
   return (
     <div className={"alert-card " + className}>
       <div>
