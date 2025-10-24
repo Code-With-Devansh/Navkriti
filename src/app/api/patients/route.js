@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import Patient from '@/models/patient';
+
 export async function GET() {
   try {
     await dbConnect();

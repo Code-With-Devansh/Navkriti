@@ -1,5 +1,10 @@
 // app/api/patient/medicines/intake/route.js
 // Record medicine intake
+import { NextResponse } from 'next/server';
+import dbConnect from '@/lib/mongoose';
+import Patient from '@/models/patient';
+
+import { authenticate } from '@/middleware/auth';
 export async function POST(request) {
   try {
     const auth = await authenticate(request);
@@ -20,7 +25,7 @@ export async function POST(request) {
       );
     }
 
-    const patient = await Patient.findById(auth.user._id);
+    const patient = await Patient.findById(auth.patient._id);
     
     if (!patient) {
       return NextResponse.json(

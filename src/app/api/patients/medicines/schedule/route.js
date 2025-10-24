@@ -1,5 +1,10 @@
 // app/api/patient/medicines/schedule/route.js
 // Get today's medicine schedule
+import { NextResponse } from 'next/server';
+import dbConnect from '@/lib/mongoose';
+import Patient from '@/models/patient';
+
+import { authenticate } from '@/middleware/auth';
 export async function GET(request) {
   try {
     const auth = await authenticate(request);
@@ -11,7 +16,7 @@ export async function GET(request) {
     }
 
     await dbConnect();
-    const patient = await Patient.findById(auth.user._id);
+    const patient = await Patient.findById(auth.patient._id);
     
     if (!patient) {
       return NextResponse.json(

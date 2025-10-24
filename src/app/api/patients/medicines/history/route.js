@@ -2,6 +2,11 @@
 
 // app/api/patient/medicines/history/route.js
 // Get medicine intake history
+import { NextResponse } from 'next/server';
+import dbConnect from '@/lib/mongoose';
+import Patient from '@/models/patient';
+
+import { authenticate } from '@/middleware/auth';
 export async function GET(request) {
   try {
     const auth = await authenticate(request);
@@ -19,7 +24,7 @@ export async function GET(request) {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
-    const patient = await Patient.findById(auth.user._id);
+    const patient = await Patient.findById(auth.patient._id);
     
     if (!patient) {
       return NextResponse.json(
