@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 const AlertCard = ({
@@ -61,6 +62,7 @@ const formatLocation = (location) => {
 
   return (
     <div className={"alert-card " + className}>
+      <Link href={`/hospital/alerts/${alert_id}`}>
       <div>
         <div>
           <i className={"fa-solid " + iconClassName}></i>
@@ -71,6 +73,7 @@ const formatLocation = (location) => {
           <p className="txt-light">{time} ago</p>
         </div>
       </div>
+    </Link>
       <div>
         <button className="btn btn-primary" onClick={markAsResolved}>
           Mark as Resolved

@@ -22,7 +22,7 @@ export async function PUT(req, { params }) {
     }
     await dbConnect();
     const body = await req.json();
-    const alert = await Alert.findByIdAndUpdate(params.id, body, { new: true });
+    const alert = await Alert.findByIdAndUpdate(await params.id, body, { new: true });
     return NextResponse.json(alert);
   } catch (error) {
     console.error("Get patients error:", error);
