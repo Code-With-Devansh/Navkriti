@@ -16,9 +16,10 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { postJSON } from "@/lib/fetchWithProgess";
 
 export default function PatientRegister() {
-    const {setRefreshAlerts } = usePatients();
+  const { setRefreshAlerts } = usePatients();
   const [activeTab, setActiveTab] = useState("basic");
   const [formData, setFormData] = useState({
     name: "",
@@ -109,21 +110,24 @@ export default function PatientRegister() {
         localStorage.getItem("adminToken") ||
         localStorage.getItem("patientToken");
 
-      const patientResponse = await fetch("/api/admin/patients", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      const patientResponse = await postJSON(
+        "/api/admin/patients",
+        {
           name: formData.name,
           ph_number: parseInt(formData.ph_number),
           sex: formData.sex,
           age: parseInt(formData.age),
           address: formData.address,
           password: formData.password,
-        }),
-      });
+        },
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const patientData = await patientResponse.json();
 
@@ -139,26 +143,26 @@ export default function PatientRegister() {
       const patientId = patientData.data._id;
 
       if (validMedicines.length > 0 && formData.dept) {
-        const medicineResponse = await fetch(
+        const medicineResponse = await postJSON(
           `/api/admin/patients/${patientId}/add-medicine`,
+          {
+            dept: formData.dept,
+            doctor_name: formData.doctor_name,
+            problem: formData.problem,
+            followup: formData.followup || null,
+            alert_type: formData.alert_type.toLowerCase(),
+            prescription: validMedicines.map((m) => ({
+              ...m,
+              start_date: new Date(), // optional
+              is_active: true,
+            })),
+          },
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({
-              dept: formData.dept,
-              doctor_name: formData.doctor_name,
-              problem: formData.problem,
-              followup: formData.followup || null,
-              alert_type: formData.alert_type.toLowerCase(),
-              prescription: validMedicines.map((m) => ({
-                ...m,
-                start_date: new Date(), // optional
-                is_active: true,
-              })),
-            }),
           }
         );
 

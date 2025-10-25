@@ -5,6 +5,8 @@ import AlertCard from "@/components/AlertCard";
 import ResolvedAlertCard from "@/components/ResolvedAlertCard";
 import SideBar from "@/components/SideBar";
 import { Bell } from 'lucide-react';
+import { fetchWithProgress } from "@/lib/fetchWithProgess";
+import {PulseLoader} from "react-spinners";
 
 const Alerts = () => {
   const [alerts, setAlerts] = useState([]);
@@ -27,7 +29,7 @@ const Alerts = () => {
     }
 
     try {
-      const response = await fetch("/api/alerts", {
+      const response = await fetchWithProgress("/api/alerts", {
         headers: { "Authorization": `Bearer ${token}` }
       });
 
@@ -93,8 +95,8 @@ const Alerts = () => {
       <div>
         <SideBar active={"alerts"} />
         <div className="container">
-          <div className="flex justify-center items-center p-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+          <div >
+            <PulseLoader/> 
             <p className="ml-4 text-gray-600">Loading alerts...</p>
           </div>
         </div>

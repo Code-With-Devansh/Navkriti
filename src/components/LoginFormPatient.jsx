@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Image from "next/image";
+import { fetchWithProgress, postJSON } from "@/lib/fetchWithProgess";
 
 const LoginFormPatient = () => {
   const router = useRouter();
@@ -40,15 +41,14 @@ const LoginFormPatient = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await postJSON("/api/auth/login", {
+          ph_number: parseInt(formData.ph_number),
+          password: formData.password,
+        },{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ph_number: parseInt(formData.ph_number),
-          password: formData.password,
-        }),
       });
 
       const data = await response.json();

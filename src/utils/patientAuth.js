@@ -1,5 +1,7 @@
 // utils/patientAuth.js
 
+import { fetchWithProgress } from "@/lib/fetchWithProgess";
+
 // Get patient token from localStorage
 export const getPatientToken = () => {
   if (typeof window !== "undefined") {
@@ -44,7 +46,7 @@ export const fetchWithPatientAuth = async (url, options = {}) => {
     headers["Authorization"] = `Bearer ${token}`;
   }
   
-  const response = await fetch(url, {
+  const response = await fetchWithProgress(url, {
     ...options,
     headers,
   });

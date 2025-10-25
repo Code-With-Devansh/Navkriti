@@ -1,5 +1,6 @@
 "use client";
 import MedicineReminder from "@/components/MedicineReminder";
+import { fetchWithProgress, postJSON } from "@/lib/fetchWithProgess";
 import PatientSideBar from "@/components/PatientSideBar";
 import SOSBtn from "@/components/SOSBtn";
 import React, { useState, useRef, useEffect } from "react";
@@ -131,7 +132,7 @@ const DashBoardPatient = () => {
     formData.append("resource_type", "video");
 
     try {
-      const response = await fetch(
+      const response = await fetchWithProgress(
         `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload`,
         {
           method: "POST",
@@ -155,15 +156,18 @@ const DashBoardPatient = () => {
   const transcribeAudio = async (audioUrl) => {
     try {
       // Send JSON with audio URL instead of FormData with blob
-      const response = await fetch("http://localhost:8000/transcribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const response = await postJSON(
+        "http://localhost:8000/transcribe",
+        {
           url: audioUrl, // Send Cloudinary URL
-        }),
-      });
+        },
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Transcription failed");
@@ -201,24 +205,22 @@ const DashBoardPatient = () => {
     setIsProcessing(true);
     setStatus("processing");
     setMessage("Processing audio...");
-
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
 
     try {
       // Step 1: Upload to Cloudinary first
-      setMessage("Uploading to cloud storage...");
+      setMessage("Uploading...");
       const audioUrl = await uploadToCloudinary(audioBlob);
-
       // Step 2: Transcribe using the Cloudinary URL
       setMessage("Transcribing audio...");
       const transcription = await transcribeAudio(audioUrl);
-
       // Step 3: Send SOS alert with URL and transcription
       setMessage("Sending SOS alert...");
       await sendSOSAlert(audioUrl, finalDuration, transcription);
     } catch (error) {
+      stopLoading(); // Stop loading on error
       console.error("Error in processing:", error);
       setStatus("error");
       setMessage("Failed to process audio. Please try again.");
@@ -278,13 +280,12 @@ const DashBoardPatient = () => {
         payload.location = location;
       }
 
-      const response = await fetch("/api/alerts/sos/create-alert", {
+      const response = await postJSON("/api/alerts/sos/create-alert",payload, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${patientToken}`,
         },
-        body: JSON.stringify(payload),
       });
 
       const data = await response.json();

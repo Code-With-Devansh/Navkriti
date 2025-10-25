@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import { Trash2 } from "lucide-react";
+import { fetchWithProgress } from "@/lib/fetchWithProgess";
 const PatientCard = (props) => {
   const {
     name,
@@ -12,7 +13,7 @@ const PatientCard = (props) => {
     setAlert,
   } = props;
   const deletePatient = () => {
-    fetch(`/api/admin/patients/${props.id}`, {
+    fetchWithProgress(`/api/admin/patients/${props.id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

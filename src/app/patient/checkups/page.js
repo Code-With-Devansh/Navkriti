@@ -1,6 +1,7 @@
 "use client";
 import AppointmentCard from "@/components/AppointmentCard";
 import PatientSideBar from "@/components/PatientSideBar";
+import { fetchWithProgress } from "@/lib/fetchWithProgess";
 import React, {useState, useEffect} from "react";
 const CheckUps = () => {
   const [patient, setPatient] = useState({
@@ -11,7 +12,7 @@ const CheckUps = () => {
     async function fetchPatientData() {
       try{
         const token = localStorage.getItem("patientToken");
-        let data = await fetch ("/api/patients/me", {
+        let data = await fetchWithProgress("/api/patients/me", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
