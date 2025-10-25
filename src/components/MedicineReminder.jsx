@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { fetchWithPatientAuth } from "@/utils/patientAuth";
-
+import { PulseLoader } from "react-spinners";
 const MedicineReminder = () => {
   const [schedule, setSchedule] = useState([]);
   const [history, setHistory] = useState([]);
@@ -286,9 +286,9 @@ const MedicineReminder = () => {
 
   if (loading) {
     return (
-      <div className="medicine-reminder-container">
+      <div className="medicine-reminder-container" style={{marginLeft:"500px"}}>
         <div className="loading">
-          <div className="spinner"></div>
+          <PulseLoader/>
           <p>Loading medicine schedule...</p>
         </div>
       </div>
