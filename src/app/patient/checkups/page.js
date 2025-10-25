@@ -37,12 +37,7 @@ fetchPatientData();
         <div>
           <h2>Checkup Schedule</h2>
           <p className="txt-light">Manage your appointments</p>
-          <div>
-            <button className="book-appointment-btn">
-              <i className="fa-regular fa-plus"></i>
-              Book Appointment
-            </button>
-          </div>
+          
         </div>
 
         <div className="appointmentList">
