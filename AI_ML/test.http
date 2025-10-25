@@ -1,0 +1,23 @@
+POST http://127.0.0.1:5000/api/ai
+Content-Type: application/json
+
+{
+  "age": 72,
+  "total_doses_prescribed": 30,
+  "doses_missed": 13,
+  "doses_taken": 17,
+  "consecutive_missed": 5,
+  "days_since_last_taken": 6,
+  "adherence_rate": 0.57,
+  "previous_hospitalizations": 1,
+  "comorbidity_count": 2,
+  "sex": "M",
+  "medication_criticality": "high",
+  "has_comorbidities": true,
+  "follow_up_missed": true,
+  "side_effects_reported": false,
+  "medication_name": "Lisinopril",
+  "dept": "Cardiology",
+  "medication_color": "pink",
+  "alert_type": "High"
+}
