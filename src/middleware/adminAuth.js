@@ -52,7 +52,7 @@ export async function authenticateAdmin(request) {
 }
 
 // Check specific permission
-export async function checkPermission(request, requiredPermission) {
+export async function checkPermission(request) {
   const auth = await authenticateAdmin(request);
   
   if (auth.error) {

@@ -69,9 +69,9 @@ export default function TestPusherPage() {
         <div className="mt-4 p-4 bg-blue-50 rounded">
           <h3 className="font-semibold mb-2">Instructions:</h3>
           <ol className="list-decimal list-inside space-y-1 text-sm">
-            <li>Ensure you're connected (green status above)</li>
+            <li>Ensure you&apos;re connected (green status above)</li>
             <li>Open the admin alerts page in another tab</li>
-            <li>Click "Send Test Alert" button</li>
+            <li>Click &quot;Send Test Alert&quot; button</li>
             <li>Check if notification appears on alerts page</li>
             <li>Verify alert appears in the list instantly</li>
           </ol>

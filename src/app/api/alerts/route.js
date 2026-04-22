@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 // GET all alerts (with filters)
 export async function GET(req) {
   try {
-    const auth = await checkPermission(req, "view_patients");
+    const auth = await checkPermission(req);
 
     if (auth.error) {
       return NextResponse.json(

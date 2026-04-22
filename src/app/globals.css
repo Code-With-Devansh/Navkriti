@@ -2500,6 +2500,14 @@ Tailwind utilities used in PatientRegister.jsx
     display: none;
   }
 
+  .sidebar.open {
+    width: 250px;
+  }
+
+  .sidebar.open a {
+    display: block;
+  }
+
   .menu {
     display: block;
     width: 30px;

@@ -1,23 +1,14 @@
-"use client"
-import Link from 'next/link'
-import React from 'react'
+"use client";
+import Link from 'next/link';
+import React, { useState } from 'react';
 
 const SideBar = ({ active }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const toggleSideBar = () => {
-    const sideBar = document.getElementById("sidebar");
-    if (sideBar.style.width == "100vw") {
-      sideBar.style.width = "0px";
-      Array.from(sideBar.childNodes).forEach((child) => {
-        child.style.display = "none";
-      });
-    }
-    else {
-      sideBar.style.width = "100vw";
-      Array.from(sideBar.childNodes).forEach((child) => {
-        child.style.display = "block";
-      });
-    }
-  }
+    setIsOpen(!isOpen);
+  };
+
   const links = [
     {
       href: "/hospital/dashboard",
@@ -44,10 +35,11 @@ const SideBar = ({ active }) => {
       iconClass: "fa-plus",
       label: "Add Patient"
     }
-  ]
+  ];
+
   return (
     <>
-      <aside className='sidebar' id='sidebar'>
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`} id='sidebar'>
         {
           links.map((link, index) => (
             link.label.toLowerCase() !== active ?
@@ -61,9 +53,8 @@ const SideBar = ({ active }) => {
         <div></div>
       </button>
     </>
-
-  )
-}
+  );
+};
 
 
 

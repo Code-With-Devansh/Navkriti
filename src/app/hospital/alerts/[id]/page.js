@@ -1,8 +1,8 @@
-"use client"
+"use client";
 import { fetchWithProgress } from '@/lib/fetchWithProgess';
 import { useParams } from 'next/navigation';
-import React, { useState, useEffect } from 'react'
-const page = () => {
+import React, { useState, useEffect } from 'react';
+const Alert = () => {
     const [data, setData] = useState({});
     const {id} = useParams();
     useEffect(() => {
@@ -18,11 +18,11 @@ const page = () => {
             }
         };
         fetchData();
-    }, [])
+    }, [id]);
     
   return (
     <div>{Object.keys(data).map((e)=>{return e+' : '+data[e]+'\n'})}</div>
-  )
-}
+  );
+};
 
-export default page
+export default Alert;

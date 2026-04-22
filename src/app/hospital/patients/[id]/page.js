@@ -197,7 +197,7 @@ const Patient = ({ params }) => {
       }
     };
     fetchPatient();
-  }, []);
+  }, [params]);
   return (
     <div>
       {/* {Object.keys(patient).map((key) => (

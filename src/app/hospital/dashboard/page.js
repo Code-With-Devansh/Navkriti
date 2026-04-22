@@ -8,35 +8,10 @@ import Link from "next/link";
 
 const DashBoardHospital = () => {
   const [patientChangePercent, setPatientChangePercent] = useState(0);
-  // const [refresh, setRefresh] = useState(false);
   const { patients, missedDosesMap, loading, alerts, setAlerts, refreshAlerts, setRefreshAlerts  } = usePatients();
 
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
-
-  // Fetch alerts
-  // useEffect(() => {
-  //   const fetchAlerts = async () => {
-  //     try {
-  //       const res = await fetch("/api/alerts", {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           authorization: `Bearer ${localStorage.getItem("adminToken")}`,
-  //         },
-  //       });
-  //       const data = await res.json();
-  //       setAlerts(data);
-  //     } catch (err) {
-  //       console.error("Error fetching alerts:", err);
-  //     }
-  //   };
-  //   fetchAlerts();
-  // }, [refresh]);
-
-  const today = new Date();
-  const next7Days = new Date();
-  next7Days.setDate(today.getDate() + 7);
 
   const {
     totalPatients,
@@ -44,6 +19,10 @@ const DashBoardHospital = () => {
     alertType,
     totalUpcomingCheckups,
   } = useMemo(() => {
+    const today = new Date();
+    const next7Days = new Date();
+    next7Days.setDate(today.getDate() + 7);
+
     let totalMissed = 0;
     let alert = "low";
     let upcomingCheckups = 0;
