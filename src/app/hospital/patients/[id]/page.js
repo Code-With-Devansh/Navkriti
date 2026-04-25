@@ -191,7 +191,7 @@ const Patient = ({ params }) => {
         });
         const data = await res.json();
         console.log(data.data);
-        setPatient(data.data);
+        setPatient(data);
       } catch (err) {
         console.error("Error fetching patient:", err);
       }

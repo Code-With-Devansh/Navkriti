@@ -2,6 +2,9 @@ import Image from 'next/image'
 import React from 'react'
 
 const PatientPage = ({ patient }) => {
+  if (!patient) {
+    return <div>Loading patient details...</div>;
+  }
     
   return (
     <div>
@@ -28,26 +31,28 @@ const PatientPage = ({ patient }) => {
           <section className='medicineIntake'>
               <h2>Medicine Schedule</h2>
               <section className='medicalScheduleCards'>
-                  {patient.medicine_intakes.length === 0 ? <p>No medicine schedule available.</p> :
-                      patient.medicine_intakes.map(element => {
-                          return (<div className={'medicineCard ' + (element.status.toLowerCase() === 'skipped' || element.status.toLowerCase() == "missed" ? 'high-risk-card' : element.status.toLowerCase() === 'taken' ? 'low-risk-card' : "")}>
-                              <h3>{element.medicine_name}</h3>
-                              <p><strong>Status:</strong> {element.status}</p>
-                              <p><strong>Scheduled time : </strong>{element.scheduled_time.split("T")[1].substr(0,5)} am/pm</p>
-                          </div>)
+                  {!(patient.medicine_intakes?.length) ? (
+                      <p>No medicine schedule available.</p>
+                  ) : (
+                      patient.medicine_intakes.map((element, idx) => {
+                          return (
+                              <div key={idx} className={'medicineCard ' + (element.status.toLowerCase() === 'skipped' || element.status.toLowerCase() === 'missed' ? 'high-risk-card' : element.status.toLowerCase() === 'taken' ? 'low-risk-card' : '')}>
+                                  <h3>{element.medicine_name}</h3>
+                                  <p><strong>Status:</strong> {element.status}</p>
+                                  <p><strong>Scheduled time : </strong>{element.scheduled_time.split('T')[1].substr(0,5)} am/pm</p>
+                              </div>
+                          )
                       })
-                  }
-
-
+                  )}
               </section>
           </section>
 
         <section className='recentActivity'>
             <h2>Recent Acitivity</h2>
             <section className='activityCards'>
-                {patient.med_history.length === 0 ? <p>No medical history available.</p> :
-                 patient.med_history.map(element => {
-                     return (<div className={'activityCard ' + (element.alert_type.toLowerCase() === 'high' ? 'high-risk-card' : element.alert_type.toLowerCase() === 'medium' ? 'medium-risk-card' : 'low-risk-card')}>
+                {!(patient.med_history?.length) ? <p>No medical history available.</p> :
+                 patient.med_history.map((element, idx) => {
+                     return (<div key={idx} className={'activityCard ' + (element.alert_type.toLowerCase() === 'high' ? 'high-risk-card' : element.alert_type.toLowerCase() === 'medium' ? 'medium-risk-card' : 'low-risk-card')}>
                          <h3>{element.problem}</h3>
                          <p><strong>Doctor:</strong> {element.doctor_name}</p>
                          <p><strong>Visit Date:</strong> {element.visit_date.split('T')[0]}</p>
@@ -55,8 +60,6 @@ const PatientPage = ({ patient }) => {
                      </div>)
                  })
                 }
-
-                  
             </section>
         </section>
     </div>
