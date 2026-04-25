@@ -286,7 +286,7 @@ export default function AlertPage() {
                     <p style={s.fieldLabel}>Transcription</p>
                     <div style={{ background: '#F9FAFB', border: '1px solid #E5E7EB', borderRadius: 10, padding: '12px 16px' }}>
                       <p style={{ margin: 0, fontSize: 14, color: '#374151', fontStyle: 'italic', lineHeight: 1.6 }}>
-                        "{data.sos_transcription}"
+                        {`"${data.sos_transcription}"`}
                       </p>
                     </div>
                   </div>
