@@ -94,7 +94,7 @@ const DashBoardPatient = () => {
       ) {
         setPermissionDenied(true);
         setMessage(
-          "Microphone permission denied. Please enable it in your browser settings."
+          "Microphone permission denied. Please enable it in your browser settings.",
         );
       } else {
         setMessage("Could not access microphone. Please try again.");
@@ -137,7 +137,7 @@ const DashBoardPatient = () => {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -154,33 +154,48 @@ const DashBoardPatient = () => {
 
   // UPDATED: Transcribe audio using URL instead of blob
   const transcribeAudio = async (audioUrl) => {
+    const baseUrl = "https://api.assemblyai.com";
+    const headers = {
+      authorization: `${process.env.NEXT_PUBLIC_ASSEMBLYAI_API_KEY}`,
+      "Content-Type": "application/json",
+    };
+
     try {
-      // Send JSON with audio URL instead of FormData with blob
-      const response = await postJSON(
-        "http://localhost:8000/transcribe",
-        {
-          url: audioUrl, // Send Cloudinary URL
-        },
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+      // Step 1: Submit transcription job
+      const submitResponse = await fetch(`${baseUrl}/v2/transcript`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          audio_url: audioUrl,
+          language_detection: true,
+          speech_models: ["universal-3-pro", "universal-2"],
+        }),
+      });
+
+      if (!submitResponse.ok) throw new Error("Failed to submit transcription");
+
+      const { id: transcriptId } = await submitResponse.json();
+      const pollingEndpoint = `${baseUrl}/v2/transcript/${transcriptId}`;
+
+      // Step 2: Poll until completed
+      while (true) {
+        const pollResponse = await fetch(pollingEndpoint, { headers });
+        const result = await pollResponse.json();
+
+        if (result.status === "completed") {
+          return result.text;
+        } else if (result.status === "error") {
+          throw new Error(`Transcription failed: ${result.error}`);
         }
-      );
 
-      if (!response.ok) {
-        throw new Error("Transcription failed");
+        // Wait 3 seconds before next poll
+        await new Promise((resolve) => setTimeout(resolve, 3000));
       }
-
-      const data = await response.json();
-      return data.text || data.transcription || data.result;
     } catch (error) {
       console.error("Transcription error:", error);
       return null;
     }
   };
-
   const handleSendRecording = async () => {
     if (!isRecording || isProcessing) return;
 
@@ -214,7 +229,7 @@ const DashBoardPatient = () => {
       setMessage("Uploading...");
       const audioUrl = await uploadToCloudinary(audioBlob);
       // Step 2: Transcribe using the Cloudinary URL
-      setMessage("Transcribing audio...");
+      setMessage("Transcribing audio... (this may take a few seconds)");
       const transcription = await transcribeAudio(audioUrl);
       // Step 3: Send SOS alert with URL and transcription
       setMessage("Sending SOS alert...");
@@ -271,16 +286,16 @@ const DashBoardPatient = () => {
       }
 
       const payload = {
-        audio_url: audioUrl,
-        duration: duration,
-        transcription: transcription,
+        sos_audio_url: audioUrl, // was: audio_url
+        sos_duration: duration, // was: duration
+        sos_transcription: transcription, // was: transcription
       };
 
       if (location) {
-        payload.location = location;
+        payload.sos_location = location; // was: location
       }
 
-      const response = await postJSON("/api/alerts/sos/create-alert",payload, {
+      const response = await postJSON("/api/alerts/sos/create-alert", payload, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -448,8 +463,8 @@ const DashBoardPatient = () => {
                 status === "success"
                   ? "bg-green-100 text-green-800"
                   : status === "error"
-                  ? "bg-red-100 text-red-800"
-                  : "bg-blue-100 text-blue-800"
+                    ? "bg-red-100 text-red-800"
+                    : "bg-blue-100 text-blue-800"
               }`}
             >
               {message}

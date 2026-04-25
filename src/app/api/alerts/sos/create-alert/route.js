@@ -4,7 +4,6 @@ import { v4 as uuidv4 } from "uuid";
 import { NextResponse } from "next/server";
 import { authenticate } from "@/middleware/auth";
 import { triggerNewAlert } from '@/lib/pusher';
-import { pusherServer } from '@/lib/pusher';
 function genId() {
   const d = new Date().toISOString().split("T")[0].replace(/-/g, "");
   return `ALERT-${d}-${uuidv4().slice(0, 4).toUpperCase()}`;
@@ -32,7 +31,6 @@ export async function POST(req) {
       patient_age: auth.patient.age,
       alert_type: body.alert_type || "high",
       priority: body.priority || 5,
-      created_at: currentTime,
       ...body,
     });
     const alertData = {
@@ -49,7 +47,7 @@ export async function POST(req) {
       sos_location: alert.sos_location,
       status: alert.status,
       priority: alert.priority,
-      created_at: new Date().toISOString(),
+      created_at: alert.createdAt.toISOString(),
     };
     await triggerNewAlert(alertData);
     return NextResponse.json({ success: true, alert }, { status: 201 });
