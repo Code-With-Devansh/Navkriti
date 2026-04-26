@@ -145,6 +145,56 @@ function TagPills({ label, items }) {
     </div>
   );
 }
+const parseRecommendations = (text) => {
+  if (!text) return [];
+  text = text[0]
+  
+  // Split on numbered steps (1. 2. 3. etc) and keep the delimiter
+  const segments = text
+    .replace(/(\d+\.)\s+/g, '\n$1 ')          // normalize numbered steps to newlines
+    .replace(/\*\*(.*?)\*\*/g, '§BOLD§$1§END§') // mark bold text
+    .split('\n')
+    .filter(line => line.trim() !== '');
+
+  return segments;
+};
+
+
+function renderRecommendationLine(line, index) {
+  const renderWithMarkers = (text) => {
+    const parts = text.split(/§BOLD§(.*?)§END§/g);
+    return parts.map((part, i) =>
+      i % 2 === 1
+        ? <strong key={i} style={{ color: '#C2410C' }}>{part}</strong>
+        : part
+    );
+  };
+
+  // Section heading: entire line is bold (was **text**)
+  if (line.startsWith('§BOLD§') && line.endsWith('§END§')) {
+    return (
+      <p key={index} style={{ margin: index === 0 ? 0 : '12px 0 4px', fontWeight: 700, color: '#C2410C', fontSize: 14 }}>
+        {line.replace(/§BOLD§|§END§/g, '')}
+      </p>
+    );
+  }
+
+  // Numbered step
+  if (/^\d+\./.test(line.trim())) {
+    return (
+      <p key={index} style={{ margin: 0, paddingLeft: 12, borderLeft: '2px solid #FDBA74', lineHeight: 1.6, fontSize: 14, color: '#1F2937' }}>
+        {renderWithMarkers(line.trim())}
+      </p>
+    );
+  }
+
+  // Regular line with possible inline bold
+  return (
+    <p key={index} style={{ margin: 0, lineHeight: 1.6, fontSize: 14, color: '#1F2937' }}>
+      {renderWithMarkers(line)}
+    </p>
+  );
+}
 
 function Skeleton() {
   return (
@@ -188,6 +238,7 @@ export default function AlertPage() {
   const lat    = data?.sos_location?.latitude;
   const lng    = data?.sos_location?.longitude;
   const mapUrl = lat ? `https://maps.google.com/?q=${lat},${lng}` : null;
+  const recommendationLines = parseRecommendations(data?.ai_recommendations?data.ai_recommendations:'');
 
   return (
     <div style={{ minHeight: '100vh', background: '#F9FAFB', padding: '32px 16px', fontFamily: "'DM Sans', sans-serif" }}>
@@ -327,25 +378,13 @@ export default function AlertPage() {
           {/* AI analysis */}
           <Card title="AI Analysis" icon="🤖">
             <div style={s.grid}>
-              {data.ai_confidence != null && (
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <p style={s.fieldLabel}>Confidence</p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ flex: 1, height: 6, borderRadius: 99, background: '#E5E7EB', overflow: 'hidden' }}>
-                      <div style={{
-                        height: '100%', borderRadius: 99,
-                        background: 'linear-gradient(90deg, #7C3AED, #3B82F6)',
-                        width: `${(data.ai_confidence * 100).toFixed(0)}%`,
-                      }} />
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: '#374151', minWidth: 40 }}>
-                      {(data.ai_confidence * 100).toFixed(1)}%
-                    </span>
-                  </div>
+              {recommendationLines.length > 0 ? (
+                <div style={{ gridColumn: '1 / -1', display: 'grid', gap: 10 }}>
+                  {recommendationLines.map(renderRecommendationLine)}
                 </div>
+              ) : (
+                <Field label="Recommendations" value="No recommendations available" muted wide />
               )}
-              <TagPills label="Risk Factors"    items={data.ai_risk_factors ?? []} />
-              <TagPills label="Recommendations" items={data.ai_recommendations ?? []} />
             </div>
           </Card>
 

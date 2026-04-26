@@ -12,7 +12,7 @@ const DashBoardPatient = () => {
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
   const [permissionDenied, setPermissionDenied] = useState(false);
-
+  const [aiRecommendations, setAiRecommendations] = useState(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const timerIntervalRef = useRef(null);
@@ -232,8 +232,21 @@ const DashBoardPatient = () => {
       setMessage("Transcribing audio... (this may take a few seconds)");
       const transcription = await transcribeAudio(audioUrl);
       // Step 3: Send SOS alert with URL and transcription
+      setMessage("Ai rating on the way...");
+      const aiRating = await postJSON(
+        "/api/AiEngine",
+        { transcription },
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      const aiData = await aiRating.json();
+      setAiRecommendations(aiData.firstAid);
       setMessage("Sending SOS alert...");
-      await sendSOSAlert(audioUrl, finalDuration, transcription);
+      await sendSOSAlert(audioUrl, finalDuration, transcription, aiData);
     } catch (error) {
       stopLoading(); // Stop loading on error
       console.error("Error in processing:", error);
@@ -260,7 +273,7 @@ const DashBoardPatient = () => {
     recordingStartTimeRef.current = null;
   };
 
-  const sendSOSAlert = async (audioUrl, duration, transcription) => {
+  const sendSOSAlert = async (audioUrl, duration, transcription, aiRating) => {
     try {
       const patientToken = localStorage.getItem("patientToken");
 
@@ -289,6 +302,7 @@ const DashBoardPatient = () => {
         sos_audio_url: audioUrl, // was: audio_url
         sos_duration: duration, // was: duration
         sos_transcription: transcription, // was: transcription
+        ai_recommendations: aiRating.firstAid,
       };
 
       if (location) {
@@ -489,7 +503,63 @@ const DashBoardPatient = () => {
             </div>
           )}
         </div>
-
+        {/* AI First Aid Recommendations */}
+        {aiRecommendations && (
+          <div className="mt-6 p-5 bg-orange-50 border border-orange-300 rounded-xl text-left">
+            <p className="text-orange-800 font-bold text-base mb-3 flex items-center gap-2">
+              🩺 AI First Aid Recommendations
+            </p>
+            <div className="text-orange-900 text-sm space-y-2">
+              {aiRecommendations
+                .split("\n")
+                .filter((line) => line.trim() !== "")
+                .map((line, index) => {
+                  // Heading lines like **Emergency Situation:**
+                  if (line.startsWith("**") && line.endsWith("**")) {
+                    return (
+                      <p key={index} className="font-bold text-orange-800 mt-3">
+                        {line.replace(/\*\*/g, "")}
+                      </p>
+                    );
+                  }
+                  // Inline bold + content like **IMMEDIATE ACTIONS:** Do this...
+                  if (line.includes("**")) {
+                    const parts = line.split(/\*\*(.*?)\*\*/g);
+                    return (
+                      <p key={index} className="leading-relaxed">
+                        {parts.map((part, i) =>
+                          i % 2 === 1 ? (
+                            <strong key={i} className="text-orange-800">
+                              {part}
+                            </strong>
+                          ) : (
+                            part
+                          ),
+                        )}
+                      </p>
+                    );
+                  }
+                  // Numbered steps like "1. Call 102"
+                  if (/^\d+\./.test(line.trim())) {
+                    return (
+                      <p
+                        key={index}
+                        className="pl-3 border-l-2 border-orange-300 leading-relaxed"
+                      >
+                        {line.trim()}
+                      </p>
+                    );
+                  }
+                  // Regular lines
+                  return (
+                    <p key={index} className="leading-relaxed">
+                      {line}
+                    </p>
+                  );
+                })}
+            </div>
+          </div>
+        )}
         {(status === "error" || permissionDenied) && (
           <div className="mt-4 p-4 bg-gray-100 rounded-lg">
             <p className="text-sm text-gray-700 mb-2">
